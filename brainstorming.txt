@@ -1,0 +1,7 @@
+remember it needs a login system or something with a database
+
+effort/fun vs less effort less interested
+primitive public art/message board or oekaki system
+real time chat?
+recipe/tab saver (maybe web crawler autoimport.............)
+generic "i am a small business website that sells things"
