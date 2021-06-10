@@ -1,0 +1,15 @@
+Recipe Creator
+Core: It will have login capability. Users can create different sections of ingredients and steps and save pictures with them. They will be able to download and upload recipes via UI and rest calls. Recipe bodies (ingredients, instructions, pictures) will use JSON for flexibility, but everything else, including associating recipes with users will be in mariadb. Dark mode.
+Nice if time: They will be able to add and remove another user to recipes. They will be able to track other user's recipes. They will be able to 'friend' users. Users can track tags for public recipes. Nice looking dark mode that isn't just thrown in to get a fourth model.
+
+
+SQL Tables (Models: Recipe, Tag, User, Theme)
+Recipe (recipeId, isPublic, creationTimeStamp, editTimeStamp)
+RecipeTag (recipeId, tagId)
+Tag (tagId, tagString) -- e.g. "Hawaiian"
+UserTag (userId, tagId) -- tag feeds
+UserRecipe ( userId, recipeId, status) -- status meaning 'invited' 'owner' 'editor' 'viewer'
+User (userId, username, email, joinTimeStamp, isSearchable, themeId)
+Theme (themeId, themeString) -- e.g. 'Light', 'Dark'
+Friends (leftUserId, rightUserId) -- left userid must be less than right user id 
+UserPassword (userId, password) -- Not normalized, but I think this is more secure since less chance of User.* call messup

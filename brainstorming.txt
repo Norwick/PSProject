@@ -1,5 +1,11 @@
 remember it needs a login system or something with a database
 
+would be really cool if i could do something with hooks but that might be outside of scope
+
+REMEMBER CYBERSECURITY
+ask sudo about good hashing practices for storing tokens
+database: binding user queries, salting, hashing, etc.
+
 effort/fun vs less effort less interested
 primitive public art/message board or oekaki system
 real time chat?
