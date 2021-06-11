@@ -1,0 +1,30 @@
+Recipe {
+	Ingredients {
+		[Section {
+			Name,
+			[Ingredient {
+				Name
+				Amount
+				Unit??
+				Picture
+				[Note,
+				Note,
+				Note]
+			},
+			Ingredient,
+			Ingredient]
+		},
+		Section{},
+		Section{}]
+	},
+	Instructions {
+		[Section {
+			Name,
+			Picture,
+			Instruction,
+			[Note,
+			Note]},
+		Section{},
+		Section{}]
+	}
+}
