@@ -13,3 +13,10 @@ User (userId, username, email, joinTimeStamp, isSearchable, themeId)
 Theme (themeId, themeString) -- e.g. 'Light', 'Dark'
 Friends (leftUserId, rightUserId) -- left userid must be less than right user id 
 UserPassword (userId, password) -- Not normalized, but I think this is more secure since less chance of User.* call messup
+
+
+Added:
+friends -> useruser
+Status (status id and string for userrecipe)
+UserEmail (moved email to this one along with validation status)
+NOTE: Need to add a trigger to user-less recipes
