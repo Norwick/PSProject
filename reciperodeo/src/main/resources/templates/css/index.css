@@ -1,0 +1,151 @@
+/* use thyme leaf to import the header and footer instead */
+:root {
+	--darkbg: #678D58; /* russian green */
+	--softbg: #A6C48A; /* olivine */
+	--darktext: #071E22; /* dark jungle green */
+	/* too close to white to matter --softtext: #FCF7FF; /* magnolia */
+	--accent: #D5896F; /* copper crayola */
+}
+
+body {
+	font-family: sans-serif;
+}
+
+header, footer {
+	background-color: var(--darkbg);
+	color: White;
+	position: fixed;
+	width: 100%;
+	left: 0;
+}
+
+header {
+	top: 0;
+	height: 4rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+a:hover {
+	color: Black;
+}
+
+header nav ul li {
+	display: inline-flex;
+}
+
+#site-name {
+	font-family: 'Sulphur Point', sans-serif;
+	padding-left: 1rem;
+	margin-right: auto;
+	font-size: 3rem;
+}
+
+#site-name a:hover {
+	color: White;
+}
+
+header form, header a {
+	padding-right: 1rem;
+}
+
+header button {
+	background-color: Transparent;
+	border-style: none;
+}
+
+a {
+	color: White;
+	text-decoration: none;
+}
+
+#trending-recipes ul {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+
+#trending-recipes li {
+	width: 15rem;
+	padding: 0.5rem;
+}
+
+#trending-recipes li:hover {
+	background-color: WhiteSmoke;
+}
+
+.recipe-body {
+	display: flex;
+	flex-direction: row;
+}
+
+#trending-recipes a {
+	color: Black;
+}
+
+li {
+	list-style-type: none;
+}
+
+h3 {
+	margin: 0;
+}
+
+#content li {
+	margin-top: 1rem;
+}
+.recipe-image {
+	width: 5rem;
+	height: 5rem;
+	margin-right: 1rem;
+	vertical-align: top;
+}
+
+/*
+might have for specific web pages so saving this
+#sidebar {
+	background-color: var(--softbg);
+	color: var(--darktext);
+	width: 10rem;
+	position: fixed;
+	left: 0;
+	top: 4rem;
+	height: 100%;
+}
+*/
+
+#content { 
+	margin-top: 4rem;
+	margin-bottom: 2rem;
+	background-color: White; /* readability */
+	color: Black;
+	height: 100%;
+}
+
+#add-recipe {
+	border-radius: 50%;
+	background-color: var(--accent);
+	width: 3rem;
+	height: 3rem;
+	line-height: 3rem;
+	color: White;
+	font-size: 3rem;
+	text-align: center;
+	position: fixed;
+	bottom: 3rem;
+	right: 1rem;
+	box-shadow: 0.2rem 0.2rem 0.2rem Black;
+}
+
+#add-recipe:hover {
+	background-color: var(--darkbg);
+}
+
+footer {
+	bottom: 0;
+	height: 2rem;
+	text-align: center;
+	line-height: 2rem;
+}
