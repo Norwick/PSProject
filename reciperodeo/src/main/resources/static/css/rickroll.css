@@ -1,3 +1,4 @@
+/* use thyme leaf to import the header and footer instead */
 :root {
 	--darkbg: #678D58; /* russian green */
 	--softbg: #A6C48A; /* olivine */
@@ -35,10 +36,6 @@ header nav ul li {
 	display: inline-flex;
 }
 
-.save, .cancel, textarea, select {
-	display: none;
-}
-
 #site-name {
 	font-family: 'Sulphur Point', sans-serif;
 	padding-left: 1rem;
@@ -69,36 +66,24 @@ li {
 }
 
 #content { 
-	margin-top: 4rem;
+	margin-top: 6rem;
 	margin-bottom: 2rem;
-	padding: 1rem;
 	background-color: White; /* readability */
 	color: Black;
 	height: 100%;
 	display: flex;
+	flex-direction:column;
+	align-items: center;
 	justify-content: center;
 }
 
-#avatar-button {
-	width: 15rem;
-	height: 15rem;
-	color: Transparent;
-	font-size: 10rem;
-	background-image: url("../img/avatar-placeholder.png");
-}
-
-#avatar-button:hover {
-	background: linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,.5)), url("../img/avatar-placeholder.png");
-	color: Black;
-	cursor: pointer;
-}
-
-#profile input {
-	display: none;
-}
-
-h2 {
+table, th, tr, td {
+	border-style: solid;
+	font-weight: bold;
 	text-align: center;
+	border-color: #B4ADA3;
+	border-collapse: collapse;
+	padding: 0.5em;
 }
 
 footer {

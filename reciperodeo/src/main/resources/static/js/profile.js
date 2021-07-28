@@ -60,3 +60,5 @@ setupButtons("email");
 setupButtons("password");
 
 setupButtons("bio");
+
+setupButtons("friendly");

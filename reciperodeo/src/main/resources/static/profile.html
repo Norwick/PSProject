@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sulphur+Point:wght@700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/profile.css">
+
 </head>
 <body>
 	<header>
@@ -19,6 +20,7 @@
 				<li><a href="#">Tags</a></li>
 				<li><a href="profile.html">Profile</a></li>
 				<li><a href="#">Sign Out</a></li>
+				<li><a href="rickroll.html">Rick Roll</a></li>
 			</ul>
 		</nav>
 		<form>
@@ -30,6 +32,7 @@
 	<div id="content">
 		<!-- implement this for real... (no validation currently) -->
 		<div id="profile">
+		<form>
 			<button id="avatar-button">✏️</button> <!-- not implemented, need to fool with css and ajax -->
 			<br>
 			<h2><span class="username">Yub Jub</span>
@@ -53,12 +56,24 @@
 				<button class="cancel password">❌</button>
 				<button class="edit password">✏️</button>
 			<br>
+			<strong>Friend Setting: </strong>
+				<span class="friendly">anyone</span>
+				<select class="friendly">
+					<option value="discoverable">discoverable</option>
+					<option value="hidden">hidden</option>
+					<option value="none">none</option>
+				</select>
+				<button class="save friendly">✔️</button>
+				<button class="cancel friendly">❌</button>
+				<button class="edit friendly">✏️</button>
+			<br>
 			<strong>Bio: </strong>
 				<span class="bio">Just a yub with a jub</span>
 				<textarea rows="4" cols="60" class="bio">Just a yub with a jub </textarea>
 				<button class="save bio">✔️</button>
 				<button class="cancel bio">❌</button>
 				<button class="edit bio">✏️</button>
+			</form>
 		</div>
 	</div>
 	
