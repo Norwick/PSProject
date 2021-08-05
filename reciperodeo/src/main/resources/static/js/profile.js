@@ -1,7 +1,3 @@
-/**
- * 
- */
-
 const VALUE = 0;
 const INPUT = 1;
 const SAVE = 2;
