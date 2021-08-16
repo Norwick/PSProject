@@ -22,11 +22,18 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * JPA class for Recipe which contains id, visibility, timestamps for creation and editing, and a JSON String of the actual recipe content
  * @author Norwick Lee
  */
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Recipe {
 
 	/**
@@ -81,125 +88,12 @@ public class Recipe {
 	//TODO add connection to join table for user and recipe
 	
 	/**
-	 * Creates a recipe with a generated id and timestamps, default state, empty recipeJSON, empty title, and empty tags
-	 */
-	public Recipe() {
-	}
-	
-	/**
 	 * Creates a recipe with a generated id and timestamps, default state, empty recipeJSON, provided title, and empty tags
 	 * @param title name of the created recipe
 	 */
 	public Recipe(String title) {
 		this.title = title;
 	}
-	
-	/**
-	 * @return id of recipe
-	 */
-	public UUID getId() {
-		return this.id;
-	}
-	
-	/**
-	 * @return visibility state (private, friend, or public)
-	 */
-	public Visibility getState() {
-		return this.state;
-	}
-	
-	/**
-	 * @return timestamp for when recipe was created
-	 */
-	public Date getCreationTimestamp() {
-		return this.creationTimestamp;
-	}
-	
-	/**
-	 * @return timestamp for when recipe was last edited
-	 */
-	public Date getEditTimestamp() {
-		return this.editTimestamp;
-	}
-	
-	/**
-	 * @return name of recipe
-	 */
-	public String getTitle() {
-		return title;
-	}
-	
-	/**
-	 * @return string representing json of recipe, which contains actual recipe content
-	 */
-	public String getRecipeJSON() {
-		return this.recipeJSON;
-	}
-	
-	/**
-	 * @return the tags that apply to the recipe
-	 */
-	public List<Tag> getTags() {
-		return tags;
-	}
-	
-	/**
-	 * changes recipe id
-	 * @param id the new recipe id
-	 */
-	public void setId(UUID id) {
-		this.id = id;
-	}
-	
-	/**
-	 * changes visibility state
-	 * @param state the new visibility state
-	 */
-	public void setState(Visibility state) {
-		this.state = state;
-	}
-	
-	/**
-	 * Should never be used. Changes creation timestamp
-	 * @param creationTimeStamp the new timestamp for when the recipe was created
-	 * @param creationTimestamp 
-	 */
-	public void setCreationTimestamp(Date creationTimestamp) {
-		this.creationTimestamp = creationTimestamp;
-	}
-	
-	/**
-	 * Changes edit timestamp
-	 * @param editTimestamp the new timestamp for when the recipe was last edited
-	 */
-	public void setEditTimestamp(Date editTimestamp) {
-		this.editTimestamp = editTimestamp;
-	}
-	
-	/**
-	 * Changes title
-	 * @param title new name of recipe
-	 */
-	public void setTitle(String title) {
-		this.title = title;
-	}
-	
-	/**
-	 * Changes recipeJSON
-	 * @param recipeJSON the new string containing JSON body of recipe with instructions and ingredients
-	 */
-	public void setRecipeJSON(String recipeJSON) {
-		this.recipeJSON = recipeJSON;
-	}
-
-	/**
-	 * Changes tags to provided tags (not persist-affecting)
-	 * @param tags the new list of tags that apply to the recipe
-	 */
-	public void setTags(List<Tag> tags) {
-		this.tags = tags;
-	}
-	
 	
 	@Override
 	public boolean equals(Object obj) {

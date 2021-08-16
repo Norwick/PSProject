@@ -13,11 +13,18 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
 /**
  * JPA class for Tag with int id, string representing actual tag name, and list of recipes applied to tag
  * @author Norwick Lee
  */
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public class Tag {
 	
 	@Id
@@ -31,13 +38,6 @@ public class Tag {
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable
 	private List<Recipe> recipes = new ArrayList<>();
-	
-	/**
-	 * Creates tag with auto-generated id, unitialized name, and empty list of recipes
-	 */
-	public Tag() {
-		//empty constructor for spring
-	}
 	
 	/**
 	 * Creates tag with auto-generated id and provided name, and empty list of recipes
@@ -67,51 +67,6 @@ public class Tag {
 	 */
 	public boolean sameName(String name) {
 		return this.name.equals(name);
-	}
-
-	/**
-	 * @return id of tag
-	 */
-	public int getId() {
-		return this.id;
-	}
-	
-	/**
-	 * Changes id to provided id
-	 * @param id new tag id
-	 */
-	public void setId(int id) {
-		this.id = id;
-	}
-	
-	/**
-	 * @return name of tag
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * Changes name to provided name
-	 * @param name new name of tag
-	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-	
-	/**
-	 * @return recipes that tag applies to
-	 */
-	public List<Recipe> getRecipes() {
-		return this.recipes;
-	}
-	
-	/**
-	 * Changes recipes in tag to provided recipes
-	 * @param recipes provided recipes
-	 */
-	public void setRecipes(List<Recipe> recipes) {
-		this.recipes = recipes;
 	}
 	
 	/**
