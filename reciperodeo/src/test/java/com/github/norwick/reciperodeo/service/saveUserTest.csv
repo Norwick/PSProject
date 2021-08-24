@@ -1,0 +1,5 @@
+String email, String username, boolean isSearchable, String hash
+a@b.c,Marty,true,wakaflaka
+nom@gmail.com,Mary,false,wak
+zeg@z.z,Manny,false,yumyum
+zeg@z.z,Marisa,true,shoe

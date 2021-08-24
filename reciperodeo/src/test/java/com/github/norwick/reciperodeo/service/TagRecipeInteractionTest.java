@@ -66,7 +66,6 @@ class TagRecipeInteractionTest {
 		Assertions.assertTrue(r2.getTags().contains(t3));
 		Assertions.assertTrue(r2.getTags().contains(t2));
 		
-		
 		rs.removeRecipe(r2);
 		t3 = ts.findById(t3.getId()).get();
 		Assertions.assertFalse(t3.getRecipes().contains(r2));

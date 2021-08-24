@@ -79,7 +79,7 @@ public class TagService {
 	public void removeTag(Tag t) {
 		if (t == null) throw new NullPointerException("Tag is Null");
 		t.setRecipes(new ArrayList<>());
-		this.tagRepository.save(t);
+		t = this.tagRepository.save(t);
 		this.tagRepository.delete(t);
 	}
 	

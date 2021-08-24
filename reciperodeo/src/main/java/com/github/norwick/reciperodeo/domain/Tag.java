@@ -47,19 +47,6 @@ public class Tag {
 		this.setName(name);
 	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (obj == null) return false;
-		if (!(obj instanceof Tag)) return false;
-		Tag t = (Tag) obj;
-		return this.id == t.id;
-	}
-	
-	@Override
-	public int hashCode() {
-		return this.id;
-	}
-	
 	/**
 	 * Returns whether the tag has the provided tag name
 	 * @param name provided tag name
@@ -83,5 +70,18 @@ public class Tag {
 	 */
 	public void removeRecipe(Recipe r) {
 		this.recipes.remove(r);
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) return false;
+		if (!(obj instanceof Tag)) return false;
+		Tag t = (Tag) obj;
+		return this.id == t.id;
+	}
+	
+	@Override
+	public int hashCode() {
+		return this.id;
 	}
 }

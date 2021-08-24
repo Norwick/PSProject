@@ -2,13 +2,18 @@ package com.github.norwick.reciperodeo.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.github.norwick.reciperodeo.domain.Recipe;
+import com.github.norwick.reciperodeo.domain.RecipeAccess;
+import com.github.norwick.reciperodeo.domain.RecipeAccess.Access;
 import com.github.norwick.reciperodeo.domain.Tag;
+import com.github.norwick.reciperodeo.domain.User;
+import com.github.norwick.reciperodeo.repository.RecipeAccessRepository;
 import com.github.norwick.reciperodeo.repository.RecipeRepository;
 
 /**
@@ -22,8 +27,10 @@ public class RecipeService {
 	private RecipeRepository recipeRepository;
 	
 	@Autowired
-	private TagService tagService;
+	private RecipeAccessRepository recipeAccessRepository;
 	
+	@Autowired
+	private TagService tagService;
 	
 	/**
 	 * Searches for all recipes containing provided substring in title
@@ -73,7 +80,48 @@ public class RecipeService {
 			t.removeRecipe(r);
 			tagService.saveTag(t);
 		}
+		Set<RecipeAccess> ras = r.getRecipeAccesses();
+		for (RecipeAccess ra : ras) {
+			recipeAccessRepository.delete(ra);
+		}
 		this.recipeRepository.delete(r);
+	}
+	
+	/**
+	 * Sets user access level for recipe
+	 * @param r recipe to be affected
+	 * @param u user to be set
+	 * @param a level of access
+	 * @return an object representing the user's access to the recipe that contains the current version of the user and recipe
+	 */
+	public RecipeAccess setUser(Recipe r, User u, Access a) {
+		if (u == null) throw new NullPointerException("User is null");
+		if (r == null) throw new NullPointerException("Recipe is null");
+		Optional<RecipeAccess> ora = recipeAccessRepository.findByUserAndRecipe(u, r);
+		RecipeAccess ra;
+		if (ora.isEmpty()) {
+			ra = new RecipeAccess();
+			ra.setRecipe(r);
+			ra.setUser(u);
+		} else {
+			ra = ora.get();
+		}
+		ra.setRelationship(a);
+		return recipeAccessRepository.save(ra);
+	}
+	
+	/**
+	 * Removes a user's access to the recipe
+	 * @param r provided recipe
+	 * @param u provided user
+	 */
+	public void removeUser(Recipe r, User u) {
+		if (u == null) throw new NullPointerException("User is null");
+		if (r == null) throw new NullPointerException("Recipe is null");
+		Optional<RecipeAccess> ora = recipeAccessRepository.findByUserAndRecipe(u, r);
+		if (ora.isPresent()) {
+			recipeAccessRepository.delete(ora.get());
+		}
 	}
 	
 	/**
