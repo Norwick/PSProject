@@ -93,8 +93,9 @@ public class RecipeService {
 	 * @param u user to be set
 	 * @param a level of access
 	 * @return an object representing the user's access to the recipe that contains the current version of the user and recipe
+	 * @throws IllegalRelationshipException if sole owner is trying to change their access level
 	 */
-	public RecipeAccess setUser(Recipe r, User u, Access a) {
+	public RecipeAccess setUser(Recipe r, User u, Access a) throws IllegalRelationshipException {
 		if (u == null) throw new NullPointerException("User is null");
 		if (r == null) throw new NullPointerException("Recipe is null");
 		Optional<RecipeAccess> ora = recipeAccessRepository.findByUserAndRecipe(u, r);
@@ -105,13 +106,40 @@ public class RecipeService {
 			ra.setUser(u);
 		} else {
 			ra = ora.get();
+			if (ra.getRelationship() == Access.OWNER) {
+				int owners = recipeAccessRepository.findByRecipeAndRelationship(r, Access.OWNER).size();
+				if (owners < 2) {
+					throw new IllegalRelationshipException("There must be more than one owner in order to remove ownership");
+				}
+			}
 		}
 		ra.setRelationship(a);
 		return recipeAccessRepository.save(ra);
 	}
 	
+	//Changes ownership of recipe related to provided relationship if 
+	//recipe relationship is that of an owner
+	private Optional<RecipeAccess> changeOwnership(RecipeAccess ra) {
+		if (ra.getRelationship() != Access.OWNER) return Optional.of(ra);
+		ra.setRelationship(Access.VIEWER);
+		ra = recipeAccessRepository.save(ra);
+		Recipe r = ra.getRecipe();
+		int owners = recipeAccessRepository.findByRecipeAndRelationship(r, Access.OWNER).size();
+		if (owners > 0) return Optional.of(ra);
+		List<RecipeAccess> editors = recipeAccessRepository.findByRecipeAndRelationship(r, Access.EDITOR);
+		if (editors.isEmpty()) {
+			this.removeRecipe(ra.getRecipe());
+			return Optional.empty();
+		}
+		editors.get(0).setRelationship(Access.OWNER);
+		recipeAccessRepository.save(editors.get(0));
+		return recipeAccessRepository.findById(ra.getId());
+	}
+	
 	/**
-	 * Removes a user's access to the recipe
+	 * Removes a user's access to the recipe.
+	 * Will change editor to owner if no owners are left.
+	 * Will delete recipe if neither editors nor owners are left.
 	 * @param r provided recipe
 	 * @param u provided user
 	 */
@@ -120,7 +148,10 @@ public class RecipeService {
 		if (r == null) throw new NullPointerException("Recipe is null");
 		Optional<RecipeAccess> ora = recipeAccessRepository.findByUserAndRecipe(u, r);
 		if (ora.isPresent()) {
-			recipeAccessRepository.delete(ora.get());
+			ora = changeOwnership(ora.get());
+			if (ora.isPresent()) {
+				recipeAccessRepository.delete(ora.get());
+			}
 		}
 	}
 	
@@ -130,5 +161,13 @@ public class RecipeService {
 	 */
 	public long count() {
 		return this.recipeRepository.count();
+	}
+
+	/**
+	 * Returns a list of all recipes in database
+	 * @return list of recipes
+	 */
+	public List<Recipe> findAll() {
+		return recipeRepository.findAll();
 	}
 }

@@ -70,11 +70,11 @@ public class RecipeAccess {
 		if (obj == null) return false;
 		if (!(obj instanceof RecipeAccess)) return false;
 		RecipeAccess ra = (RecipeAccess) obj;
-		return this.user.equals(ra.user) && this.recipe.equals(ra.recipe);
+		return this.id.equals(ra.id);
 	}
 	
 	@Override
 	public int hashCode() {
-		return this.user.hashCode() * 31 + this.recipe.hashCode();
+		return this.id.hashCode();
 	}
 }

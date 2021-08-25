@@ -19,4 +19,5 @@ public interface RecipeRepository extends CrudRepository<Recipe, UUID> {
 	 */
 	List<Recipe> findByTitleContaining(String title);
 
+	List<Recipe> findAll();
 }

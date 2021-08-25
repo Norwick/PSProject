@@ -1,6 +1,5 @@
 package com.github.norwick.reciperodeo.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import com.github.norwick.reciperodeo.domain.RecipeAccess;
 import com.github.norwick.reciperodeo.domain.User;
-import com.github.norwick.reciperodeo.repository.PasswordRepository;
 import com.github.norwick.reciperodeo.repository.UserRepository;
 
 /**
@@ -22,9 +20,6 @@ import com.github.norwick.reciperodeo.repository.UserRepository;
 public class UserService {
 	@Autowired
 	private UserRepository userRepository;
-	
-//	@Autowired
-//	private PasswordRepository passwordRepository;
 	
 	@Autowired
 	private RecipeService recipeService;
@@ -44,7 +39,6 @@ public class UserService {
 	 */
 	public User saveUser(User u) {
 		if (u == null) throw new NullPointerException("User is null");
-//		passwordRepository.save(u.getPassword());
 		return userRepository.save(u);
 	}
 	
@@ -52,13 +46,11 @@ public class UserService {
 	 * Deletes provided user from database
 	 * @param u provided user
 	 */
-	public void removeUser(User u ) {
+	public void removeUser(User u) {
 		if (u == null) throw new NullPointerException("User is null");
-//		u.setTheme(null);
 		u = userRepository.save(u);
 		Set<RecipeAccess> ras = u.getRecipeAccesses();
 		for (RecipeAccess ra : ras) {
-			//TODO do i need to update user
 			recipeService.removeUser(ra.getRecipe(), u);
 		}
 		userRepository.delete(u);
@@ -70,6 +62,7 @@ public class UserService {
 	 * @return optional containing user if present or null
 	 */
 	public Optional<User> findById(UUID id) {
+		if (id == null) throw new NullPointerException("Id is null");
 		return userRepository.findById(id);
 	}
 	
@@ -79,6 +72,7 @@ public class UserService {
 	 * @return List of all users under that email
 	 */
 	public List<User> findByEmail(String email) {
+		if (email == null) throw new NullPointerException("Email is null");
 		return userRepository.findByEmail(email);
 	}
 	
@@ -88,6 +82,7 @@ public class UserService {
 	 * @return optional containing user if found
 	 */
 	public Optional<User> findByUsername(String username) {
+		if (username == null) throw new NullPointerException("Username is null");
 		return userRepository.findByUsername(username);
 	}
 	
@@ -97,6 +92,7 @@ public class UserService {
 	 * @return list containing all public users with matching email
 	 */
 	public List<User> findBySearchableEmail(String email) {
+		if (email == null) throw new NullPointerException("Email is null");
 		return userRepository.findByIsSearchableTrueAndEmail(email);
 	}
 	
@@ -106,6 +102,7 @@ public class UserService {
 	 * @return list of three or less public users that match provided username substring
 	 */
 	public List<User> findBySearchableUsernameNonExhaustive(String username) {
+		if (username == null) throw new NullPointerException("Username is null");
 		return userRepository.findFirst3ByIsSearchableTrueAndUsernameContaining(username);
 	}
 	
@@ -116,6 +113,8 @@ public class UserService {
 	 * @return optional containing user if authentication was a success or null if not
 	 */
 	public Optional<User> authenticate(String username, String hash) {
+		if (username == null) throw new NullPointerException("Username is null");
+		if (hash == null) throw new NullPointerException("Password hash is null");
 		Optional<User> ou = userRepository.findByUsername(username);
 		if (ou.isEmpty()) return ou;
 		User u = ou.get();

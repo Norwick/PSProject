@@ -70,66 +70,19 @@ public class User {
 	@OneToMany(fetch = FetchType.EAGER, mappedBy="user")
 	private Set<RecipeAccess> recipeAccesses = new HashSet<>();
 	
-//	@OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
-//	private Password password;
-//	
-//	@ManyToOne(fetch = FetchType.EAGER)
-//	private Theme theme;
-//	
-//	@ManyToMany(fetch = FetchType.EAGER)
-//	@JoinTable
-//	private Set<Tag> tags = new HashSet<>();
-//	
-//	@ManyToMany(fetch = FetchType.EAGER)
-//	@JoinTable
-//	private Set<User> friends = new HashSet<>();
-//	
-//	@ManyToMany(fetch = FetchType.EAGER, mappedBy="friends")
-//	private Set<User> friendOf = new HashSet<>();
-//	
-//	/**
-//	 * Creates password for user from hash and sets password
-//	 * @param hash hashed password to use
-//	 * @return created password
-//	 */
-//	public Password createPassword(String hash) {
-//		Password p = new Password();
-//		p.setHash(hash);
-//		this.setPassword(p);
-//		return p;
-//	}
-//	
-//	/**
-//	 * Adds provided user to friends list
-//	 * @param u provided user
-//	 */
-//	public void addFriend(User u) {
-//		this.friends.add(u);
-//	}
-//	
-//	/**
-//	 * Removes provided user from friends list
-//	 * @param u provided user
-//	 */
-//	public void removeFriend(User u) {
-//		this.friends.remove(u);
-//	}
-//	
-//	/**
-//	 * Adds provided tag to tags user tracks
-//	 * @param t provided tag
-//	 */
-//	public void addTag(Tag t) {
-//		this.tags.add(t);
-//	}
-//	
-//	/**
-//	 * Removes provided tag from tags user tracks
-//	 * @param t provided tag
-//	 */
-//	public void removeTag(Tag t) {
-//		this.tags.remove(t);
-//	}
+	/**
+	 * Initialize new user with all non-generated fields set
+	 * @param username username of user
+	 * @param email email of user
+	 * @param isSearchable whether user is discoverable by other users
+	 * @param hash password hash
+	 */
+	public User(String username, String email, Boolean isSearchable, String hash) {
+		this.username = username;
+		this.email = email;
+		this.isSearchable = isSearchable;
+		this.hash = hash;
+	}
 	
 	@Override
 	public boolean equals(Object obj) {
