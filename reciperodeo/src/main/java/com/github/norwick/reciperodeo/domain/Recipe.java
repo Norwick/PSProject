@@ -3,7 +3,6 @@ package com.github.norwick.reciperodeo.domain;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -14,7 +13,7 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
@@ -87,8 +86,8 @@ public class Recipe {
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy="recipes")
 	private List<Tag> tags = new ArrayList<>();
 	
-	@OneToMany(fetch = FetchType.EAGER, mappedBy="recipe")
-	private Set<RecipeAccess> recipeAccesses;
+	@ManyToOne(fetch = FetchType.EAGER)
+	private User user;
 	
 	/**
 	 * Creates a recipe with a generated id and timestamps, default state, empty recipeJSON, provided title, and empty tags

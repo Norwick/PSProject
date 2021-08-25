@@ -22,13 +22,11 @@ import com.github.norwick.reciperodeo.domain.User;
 
 @SpringBootTest
 @TestMethodOrder(OrderAnnotation.class)
-public class UserServiceTest {
+class UserServiceTest {
 
 	@Autowired
 	UserService us;
 	
-	
-	//ugh i need them to work sequentially but i'm not able to force it with order, so commented out instead
 	@ParameterizedTest
 	@CsvFileSource(resources = "saveUserTest.csv", numLinesToSkip=1)
 	@Order(1)

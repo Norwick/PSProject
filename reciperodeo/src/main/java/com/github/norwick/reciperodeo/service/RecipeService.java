@@ -2,18 +2,13 @@ package com.github.norwick.reciperodeo.service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.github.norwick.reciperodeo.domain.Recipe;
-import com.github.norwick.reciperodeo.domain.RecipeAccess;
-import com.github.norwick.reciperodeo.domain.RecipeAccess.Access;
 import com.github.norwick.reciperodeo.domain.Tag;
-import com.github.norwick.reciperodeo.domain.User;
-import com.github.norwick.reciperodeo.repository.RecipeAccessRepository;
 import com.github.norwick.reciperodeo.repository.RecipeRepository;
 
 /**
@@ -25,9 +20,6 @@ public class RecipeService {
 	
 	@Autowired
 	private RecipeRepository recipeRepository;
-	
-	@Autowired
-	private RecipeAccessRepository recipeAccessRepository;
 	
 	@Autowired
 	private TagService tagService;
@@ -80,79 +72,9 @@ public class RecipeService {
 			t.removeRecipe(r);
 			tagService.saveTag(t);
 		}
-		Set<RecipeAccess> ras = r.getRecipeAccesses();
-		for (RecipeAccess ra : ras) {
-			recipeAccessRepository.delete(ra);
-		}
+		r.setUser(null);
+		r = recipeRepository.save(r);
 		this.recipeRepository.delete(r);
-	}
-	
-	/**
-	 * Sets user access level for recipe
-	 * @param r recipe to be affected
-	 * @param u user to be set
-	 * @param a level of access
-	 * @return an object representing the user's access to the recipe that contains the current version of the user and recipe
-	 * @throws IllegalRelationshipException if sole owner is trying to change their access level
-	 */
-	public RecipeAccess setUser(Recipe r, User u, Access a) throws IllegalRelationshipException {
-		if (u == null) throw new NullPointerException("User is null");
-		if (r == null) throw new NullPointerException("Recipe is null");
-		Optional<RecipeAccess> ora = recipeAccessRepository.findByUserAndRecipe(u, r);
-		RecipeAccess ra;
-		if (ora.isEmpty()) {
-			ra = new RecipeAccess();
-			ra.setRecipe(r);
-			ra.setUser(u);
-		} else {
-			ra = ora.get();
-			if (ra.getRelationship() == Access.OWNER) {
-				int owners = recipeAccessRepository.findByRecipeAndRelationship(r, Access.OWNER).size();
-				if (owners < 2) {
-					throw new IllegalRelationshipException("There must be more than one owner in order to remove ownership");
-				}
-			}
-		}
-		ra.setRelationship(a);
-		return recipeAccessRepository.save(ra);
-	}
-	
-	//Changes ownership of recipe related to provided relationship if 
-	//recipe relationship is that of an owner
-	private Optional<RecipeAccess> changeOwnership(RecipeAccess ra) {
-		if (ra.getRelationship() != Access.OWNER) return Optional.of(ra);
-		ra.setRelationship(Access.VIEWER);
-		ra = recipeAccessRepository.save(ra);
-		Recipe r = ra.getRecipe();
-		int owners = recipeAccessRepository.findByRecipeAndRelationship(r, Access.OWNER).size();
-		if (owners > 0) return Optional.of(ra);
-		List<RecipeAccess> editors = recipeAccessRepository.findByRecipeAndRelationship(r, Access.EDITOR);
-		if (editors.isEmpty()) {
-			this.removeRecipe(ra.getRecipe());
-			return Optional.empty();
-		}
-		editors.get(0).setRelationship(Access.OWNER);
-		recipeAccessRepository.save(editors.get(0));
-		return recipeAccessRepository.findById(ra.getId());
-	}
-	
-	/**
-	 * Removes a user's access to the recipe.
-	 * Will change editor to owner if no owners are left.
-	 * Will delete recipe if neither editors nor owners are left.
-	 * @param r provided recipe
-	 * @param u provided user
-	 */
-	public void removeUser(Recipe r, User u) {
-		if (u == null) throw new NullPointerException("User is null");
-		if (r == null) throw new NullPointerException("Recipe is null");
-		Optional<RecipeAccess> ora = recipeAccessRepository.findByUserAndRecipe(u, r);
-		if (ora.isPresent()) {
-			ora = changeOwnership(ora.get());
-			if (ora.isPresent()) {
-				recipeAccessRepository.delete(ora.get());
-			}
-		}
 	}
 	
 	/**
