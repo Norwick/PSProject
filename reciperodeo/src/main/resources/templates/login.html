@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/general.html :: head">
+</head>
+<body>
+	<header th:replace="fragments/general.html :: header"> </header>
+	<div id="content">
+		<div sec:authorize="isAuthenticated()" id="logout">
+	       	<form th:action="@{/logout}" method="post">
+	       		<label>You are already logged in.<br> Please logout to switch accounts.</label><br>
+				<button type="submit" style="font-weight:bold;">Logout</button>
+	       	</form>
+		</div>
+		<div sec:authorize="!isAuthenticated()" id="login">
+			<div class="msg" th:if="${(param.logout != null) and (param.logout[0] == 'true')}">
+			    Successful Logout
+			</div>
+			<div class="msg" th:if="${(param.error != null) and (param.error[0] == 'true')}">
+			    Invalid input
+			</div>
+			<div class="msg" th:if="${(param.delete != null) and (param.delete[0] == 'true')}">
+			    Successful Delete
+			</div>
+			<h2>Login</h2>
+			<form action="#" th:action="@{/login}" method="post">
+				<label for="username">Username:</label><br>
+				<input type="text" id="username" name="username">
+				<br><br>
+				
+				<label for="password">Password:</label><br>
+				<input type="password" name="password" id="password">
+				<br><br>
+				
+				<button type="submit" style="font-weight:bold;">Login</button> 
+			</form>
+			<br>
+		</div>
+	</div>
+	<footer th:replace="fragments/general.html :: footer"></footer>
+</body>
+</html>

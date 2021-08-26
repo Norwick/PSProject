@@ -1,0 +1,45 @@
+#content h2, #content .msg {
+	text-align: center;
+}
+
+#content input {
+	width: 20rem;
+    box-sizing: border-box;
+}
+
+#content button, #content .msg {
+	width: 100%;
+	background-color: var(--accent);
+	color: White;
+	border-style: none;
+	font-size: 1.5rem;
+}
+
+#content button {
+	font-size: 1.5rem;
+	cursor: pointer;
+}
+
+#content button:hover {
+	background-color: var(--darkbg);
+	color: Black;
+}
+
+#content .msg {
+	opacity: 0.5;
+	color: Black;
+	font-style: italic;
+	padding-top: 0.1rem;
+	padding-bottom: 0.1rem;
+}
+
+#logout {
+	text-align: center;
+	padding: 0;
+	margin: 0;
+	font-size: 2rem;
+}
+
+#logout button {
+	width: 10rem;
+}

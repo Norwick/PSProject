@@ -45,11 +45,11 @@ public class Recipe {
 	 * Visible to owner and editors
 	 */
 	PRIVATE, 
-	
-	/**
-	 * Visible to owner, editors, and friends
-	 */
-	FRIEND, 
+//	
+//	/**
+//	 * Visible to owner, editors, and friends
+//	 */
+//	FRIEND, 
 	
 	/**
 	 * Visible to anyone

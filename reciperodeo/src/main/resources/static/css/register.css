@@ -2,13 +2,13 @@
 	text-align: center;
 }
 
-#content textarea, #content input {
-	width: 50rem;
+#content input {
+	width: 20rem;
     box-sizing: border-box;
 }
 
-#content textarea {
-	height: 10rem;
+#content input[type='checkbox'] {
+	width: fit-content;
 }
 
 #content button {

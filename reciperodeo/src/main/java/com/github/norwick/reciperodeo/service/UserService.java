@@ -6,6 +6,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.github.norwick.reciperodeo.domain.Recipe;
@@ -17,7 +20,7 @@ import com.github.norwick.reciperodeo.repository.UserRepository;
  * @author Norwick Lee
  */
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 	@Autowired
 	private UserRepository userRepository;
 	
@@ -94,7 +97,7 @@ public class UserService {
 	 */
 	public List<User> findBySearchableEmail(String email) {
 		if (email == null) throw new NullPointerException();
-		return userRepository.findByIsSearchableTrueAndEmail(email);
+		return userRepository.findBySearchableTrueAndEmail(email);
 	}
 	
 	/**
@@ -104,7 +107,7 @@ public class UserService {
 	 */
 	public List<User> findBySearchableUsernameNonExhaustive(String username) {
 		if (username == null) throw new NullPointerException();
-		return userRepository.findFirst3ByIsSearchableTrueAndUsernameContaining(username);
+		return userRepository.findFirst3BySearchableTrueAndUsernameContaining(username);
 	}
 	
 	/**
@@ -123,5 +126,12 @@ public class UserService {
 			return ou;
 		}
 		return Optional.empty();
+	}
+	
+	@Override
+	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+		Optional<User> ou = this.findByUsername(username);
+		if (ou.isEmpty()) throw new UsernameNotFoundException("Could not find user for provided username");
+		return org.springframework.security.core.userdetails.User.withUsername(username).password(ou.get().getHash()).authorities("USER").build();
 	}
 }

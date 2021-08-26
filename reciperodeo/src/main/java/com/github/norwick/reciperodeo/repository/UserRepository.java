@@ -34,12 +34,12 @@ public interface UserRepository extends CrudRepository<User, UUID> {
 	 * @param username string representing fragment of username
 	 * @return list of first three results for discoverable matches
 	 */
-	List<User> findFirst3ByIsSearchableTrueAndUsernameContaining(String username);
+	List<User> findFirst3BySearchableTrueAndUsernameContaining(String username);
 	
 	/**
 	 * Searches for user by email if they're discoverable
 	 * @param email email of user
 	 * @return all users that use the provided email and are discoverable
 	 */
-	List<User> findByIsSearchableTrueAndEmail(String email);
+	List<User> findBySearchableTrueAndEmail(String email);
 }

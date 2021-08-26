@@ -14,14 +14,8 @@ function hideElements(button) {
 	return elements;
 }
 
-function saveEdit() {
-	let elements = hideElements(this);
-	if (this.classList[1] != 'password') {
-		elements[VALUE].innerHTML = elements[INPUT].value;
-	}
-}
-
-function cancelEdit() {
+function cancelEdit(event) {
+	event.preventDefault();
 	let elements = hideElements(this);
 	elements[INPUT].value = elements[VALUE].innerHTML;
 }
@@ -30,7 +24,8 @@ function getElementList(button) {
 	return document.getElementsByClassName(button.classList[1]);
 }
 
-function openEdit() {
+function openEdit(event) {
+	event.preventDefault();
 	let elements = getElementList(this);
 	elements[INPUT].style.display = "initial";
 	elements[SAVE].style.display = "initial";
@@ -42,12 +37,15 @@ function openEdit() {
 function setupButtons(c) {
 	let elements = document.getElementsByClassName(c);
 	elements[EDIT].addEventListener('click', openEdit);
-	elements[SAVE].addEventListener('click', saveEdit);
 	elements[CANCEL].addEventListener('click', cancelEdit);
 }
 
-let avatarButton = document.getElementById("avatar-button");
-/** special case */
+function deleteEnsure(event) {
+	if(!confirm('Are you sure you want to delete your account?')) {
+		event.preventDefault();
+		location.reload();
+	}
+}
 
 setupButtons("username");
 
@@ -55,6 +53,6 @@ setupButtons("email");
 
 setupButtons("password");
 
-setupButtons("bio");
+setupButtons("searchable");
 
-setupButtons("friendly");
+document.getElementsByClassName("delete")[0].addEventListener('click', deleteEnsure);

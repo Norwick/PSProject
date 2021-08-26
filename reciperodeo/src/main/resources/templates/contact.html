@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/general.html :: head">
+</head>
+<body>
+	<header th:replace="fragments/general.html :: header"> </header>
+	<!-- haha this form makes such an ugly email -->
+	<div id="content">
+		<div id="contact">
+			<h2>Contact Us</h2>
+			<!-- implement via js and spring after this -->
+			<form name="contact-form" action="mailto:norwick.ko.lee@gmail.com" method="POST" enctype=”multipart/form-data”>
+			<label for="contact-name">Name:</label><br>
+			<input type="text" name="contact-name" id="contact-name" th:value="${username}" required><br><br>
+			<label for="contact-email">Email:</label><br>
+			<input type="email" name="contact-email" id="contact-email" required><br><br>
+			<label for="contact-subject">Subject:</label><br>
+			<input type="text" name="contact-subject" id="contact-subject"><br><br>
+			<label for="contact-message">Message:</label><br>
+			<textarea name="contact-message" id="contact-message" required></textarea><br><br>
+			<button type="submit" style="font-weight:bold;">Submit</button> 
+			<!--  inline styling -->
+			</form>
+		</div>
+	</div>
+	
+	<footer th:replace="fragments/general.html :: footer"></footer>
+</body>
+</html>

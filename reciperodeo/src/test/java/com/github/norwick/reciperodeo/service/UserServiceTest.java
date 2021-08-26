@@ -34,7 +34,7 @@ class UserServiceTest {
 		User u = new User();
 		u.setEmail(email);
 		u.setUsername(username);
-		u.setIsSearchable(isSearchable);
+		u.setSearchable(isSearchable);
 		u.setHash(hash);
 		u = us.saveUser(u);
 		Assertions.assertTrue(us.findByUsername(username).isPresent());
@@ -93,7 +93,7 @@ class UserServiceTest {
 	}
 	
 	@ParameterizedTest
-	@CsvSource({"Mary,blar,false","Marisa,'',false","Johny,wak,false","Manny,yumyum,true"})
+	@CsvSource({"Mary,blar,false","Marisa,'',false","Johny,wakwakwak,false","Manny,yumyumyum,true"})
 	@Order(7)
 	void authenticate(String username, String hash, boolean isPresent) {
 		Assertions.assertEquals(isPresent,us.authenticate(username, hash).isPresent());

@@ -15,6 +15,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.CreationTimestamp;
@@ -44,22 +46,26 @@ public class User {
 	@ColumnTransformer(write="uuid_to_bin(?)")
 	private UUID id;
 
-	@NotNull
+	@NotNull(message = "Must be filled")
+	@Size(min=1, message="Must not be blank")
 	@Column(unique=true)
+	@Pattern(regexp = "^[a-zA-Z0-9]+$", message = "Must not contain special characters")
 	private String username;
 	
-	@NotNull
-	@Email
+	@NotNull(message = "Must be filled")
+	@Size(min=1, message="Must not be blank")
+	@Email(message = "Must be a valid email")
 	private String email;
 	
 	@CreationTimestamp
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date joinTimestamp;
 	
-	@NotNull
-	private Boolean isSearchable;
+	@NotNull(message = "Must be filled")
+	private Boolean searchable;
 	
-	@NotNull
+	@NotNull(message = "Must be filled")
+	@Size(min=8, message = "Must be at least 8 characers")
 	private String hash;
 
 	@OneToMany(fetch = FetchType.EAGER, mappedBy="user")
@@ -75,7 +81,7 @@ public class User {
 	public User(String username, String email, Boolean isSearchable, String hash) {
 		this.username = username;
 		this.email = email;
-		this.isSearchable = isSearchable;
+		this.searchable = isSearchable;
 		this.hash = hash;
 	}
 	

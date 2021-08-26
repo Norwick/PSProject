@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/general.html :: head">
+</head>
+<body>
+	<header th:replace="fragments/general.html :: header"> </header>
+	<div id="content">
+		<div id="register">
+			<h2>Register</h2>
+			<form action="#" th:action="@{/register}" th:object="${user}" method="post">
+				<label th:for="${#ids.next('username')}">Username:</label><br>
+				<input type="text" th:field="*{username}"><br>
+				<span th:if="${#fields.hasErrors('username')}" th:errors="*{username}"></span>
+				<br><br>
+				
+				<label th:for="${#ids.next('email')}">Email:</label><br>
+				<input type="email" th:field="*{email}"><br>
+				<span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span>
+				<br><br>
+				
+				<label th:for="${#ids.next('hash')}">Password:</label><br>
+				<input type="password" th:field="*{hash}"><br>
+				<span th:if="${#fields.hasErrors('hash')}" th:errors="*{hash}"></span>
+				<br><br>
+				
+				<label th:for="${#ids.next('searchable')}">Discoverable via search:</label>
+				<input type="checkbox" th:field="*{searchable}"><br>
+				<span th:if="${#fields.hasErrors('searchable')}" the:errors="*{searchable}"></span>
+				<br><br>
+				
+				<button type="submit" style="font-weight:bold;">Submit</button> 
+			</form>
+		
+		</div>
+	</div>
+	<footer th:replace="fragments/general.html :: footer"></footer>
+</body>
+</html>

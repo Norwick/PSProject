@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/general.html :: head">
+</head>
+<body>
+	<header th:replace="fragments/general.html :: header"> </header>
+	
+	<div id="content">
+		<!-- actually code this via javascript and jpa... -->
+		<div id="trending-recipes">
+		<h2>Trending</h2>
+		<ul>
+			<li>
+				<h3 class="recipe-name"><a href="#">Char Siu Bao</a></h3>
+				<div class="recipe-body">
+					<a href="#"><img class="recipe-image" alt="drawn picture of a boa" src="img/bao-placeholder.png"></a>
+					<div class="recipe-description">Not Sweet!</div>
+				</div>
+			</li>
+			<li>
+				<h3 class="recipe-name"><a href="#">Mint Pea Soup</a></h3>
+				<div class="recipe-body">
+					<a href="#"><img class="recipe-image" alt="drawn picture of mint pea soup" src="img/soup-placeholder.png"></a>
+					<div class="recipe-description">Good hot or cold, vegan optional</div>
+				</div>
+			</li>
+		</ul>
+		</div>
+		<div id="add-recipe"><a href="#">+</a></div>
+	</div>
+	<script src="js/index.js"></script>
+	<footer th:replace="fragments/general.html :: footer"></footer>
+</body>
+</html>

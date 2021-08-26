@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/general.html :: head">
+</head>
+<body>
+	<header th:replace="fragments/general.html :: header"> </header>
+	
+	<div id="content">
+		<!-- implement this for real... (no validation currently) -->
+		<div id="profile">
+			<h2>Profile</h2>
+			<div class="msg" th:if="${msg != null}" th:text="${msg}">
+			</div>
+			<form  th:action="@{/profile}" method="post" >
+					<strong>Username: </strong>
+					<span class="username" th:text="${username}">Yub Jub</span>
+					<input class="username" name="newusername" type="text" th:value="${username}">
+					<button type="submit" class="save username">✔️</button>
+					<button class="cancel username">❌</button>
+					<button class="edit username">✏️</button>
+			</form>
+			<br>
+			<form  th:action="@{/profile}" method="post" >
+				<strong>Email: </strong>
+				<span class="email" th:text="${email}">Yub@jub.sub</span>
+				<input class="email"  name="newemail" type="email" th:value="${email}">
+				<button type="submit" class="save email">✔️</button>
+				<button class="cancel email">❌</button>
+				<button class="edit email">✏️</button>
+			</form>
+			<br>
+			<form  th:action="@{/profile}" method="post" >
+				<strong>Password: </strong>
+				<span class="password">**********</span>
+				<input type="password" name="newpassword" class="password">
+				<button type="submit" class="save password">✔️</button>
+				<button class="cancel password">❌</button>
+				<button class="edit password">✏️</button>
+			</form>
+			<br>
+			<form  th:action="@{/profile}" method="post" >
+				<strong>Searchable via Website: </strong>
+				<span class="searchable" th:text="${searchable}">On</span>
+				<input type="checkbox" name="newsearchable" class="searchable" th:checked="${schecked}">
+				<button type="submit" class="save searchable">✔️</button>
+				<button class="cancel searchable">❌</button>
+				<button class="edit searchable">✏️</button>
+			</form>
+			<br>
+			<form th:action="@{/delete}" method="post">
+				<button type="submit" class="delete">Delete Account</button>
+			</form>
+		</div>
+	</div>
+	
+	<script src="js/profile.js"></script>
+	<footer th:replace="fragments/general.html :: footer"></footer>
+</body>
+</html>
