@@ -1,6 +1,6 @@
 package com.github.norwick.reciperodeo.service;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,7 +78,7 @@ public class TagService {
 	 */
 	public void removeTag(Tag t) {
 		if (t == null) throw new NullPointerException("Tag is Null");
-		t.setRecipes(new ArrayList<>());
+		t.setRecipes(new HashSet<>());
 		t = this.tagRepository.save(t);
 		this.tagRepository.delete(t);
 	}

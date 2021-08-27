@@ -11,6 +11,11 @@
 				<input type="checkbox" id="loadOnly" name="loadOnly" checked hidden>
 				<button type="submit">✏️</button>
 			</form>
+			<h2 th:text="${title}"></h2>
+			By <span th:text="${creator}"></span> <br>
+			Created <span th:text="${createDate}"></span><br>
+			Edited <span th:text="${editDate}"></span><br>
+			Tags: <span th:text="${tags}"></span>
 			<div id="generated">
 				<div id="ingredients">
 					<h2>Ingredients</h2>

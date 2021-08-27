@@ -2,6 +2,7 @@ package com.github.norwick.reciperodeo.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,7 +68,7 @@ public class RecipeService {
 	 */
 	public void removeRecipe(Recipe r) {
 		if (r == null) throw new NullPointerException("Recipe is Null");
-		List<Tag> tags = r.getTags();
+		Set<Tag> tags = r.getTags();
 		for(Tag t : tags) {
 			t.removeRecipe(r);
 			tagService.saveTag(t);

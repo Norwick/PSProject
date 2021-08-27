@@ -1,10 +1,7 @@
 package com.github.norwick.reciperodeo.controller;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -21,14 +18,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.view.RedirectView;
 
 import com.github.norwick.reciperodeo.domain.Recipe;
 import com.github.norwick.reciperodeo.domain.Tag;
@@ -74,8 +68,6 @@ public class GeneralController {
 		return userService.findByUsername(username);
 	}
 	
-	
-	//TODO edit to actually have username and also maybe directly have username
 	/**
 	 * Maps profile
 	 * @param username username for user of current session
@@ -408,7 +400,21 @@ public class GeneralController {
 		if (r.getState() != Recipe.Visibility.PUBLIC && !editor) {
 			return "redirect:/" + LI;
 		}
+		SimpleDateFormat sdf = new SimpleDateFormat("MMMMM dd, yyyy");
+		String createDate = sdf.format(r.getCreationTimestamp());
+		String editDate = sdf.format(r.getEditTimestamp());
+		
+		StringJoiner sj = new StringJoiner(",");
+		Set<Tag> tags = r.getTags();
+		for (Tag t : tags) {
+			sj.add(t.getName());
+		}
+		
 		model.addAttribute("creator", r.getUser().getUsername());
+		model.addAttribute("createDate", createDate);
+		model.addAttribute("editDate", editDate);
+		model.addAttribute("tags", sj.toString());
+		model.addAttribute("title", r.getTitle());
 		model.addAttribute("r", r);
 		model.addAttribute("recipeJson", r.getRecipeJSON());
 		model.addAttribute(PN, "viewRecipe");
