@@ -1,0 +1,33 @@
+#content h2 {
+	text-align: center;
+}
+
+#content textarea {
+	font-size: 1.5rem;
+	width: 50rem;
+	height: 6rem;
+    box-sizing: border-box;
+}
+
+#savemsg {
+	font-style: italic;
+	background-color: var(--softbg);
+	opacity: 0.8;
+	font-size: 1.5rem;
+	margin: 0.2rem;
+}
+
+#content button {
+	width: 100%;
+	margin-top: 0.5rem;
+	background-color: var(--accent);
+	color: White;
+	border-style: none;
+	font-size: 1.5rem;
+	cursor: pointer;
+}
+
+#content button:hover {
+	background-color: var(--darkbg);
+	color: Black;
+}

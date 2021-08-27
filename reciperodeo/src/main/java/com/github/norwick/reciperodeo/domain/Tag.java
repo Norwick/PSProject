@@ -1,7 +1,7 @@
 package com.github.norwick.reciperodeo.domain;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -37,7 +37,7 @@ public class Tag {
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable
-	private List<Recipe> recipes = new ArrayList<>();
+	private Set<Recipe> recipes = new HashSet<>();
 	
 	/**
 	 * Creates tag with auto-generated id and provided name, and empty list of recipes

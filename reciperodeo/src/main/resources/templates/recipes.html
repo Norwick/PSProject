@@ -11,6 +11,7 @@
 				<ul>
 					<li th:each="r : ${recipeSet}">
 						*<a th:href="@{/recipe/{id}(id=${r.getId().toString()})}" th:text="${r.getTitle()}"></a>*
+						<a class="tag" th:href="@{/recipe/tag/{id}(id=${r.getId().toString()})}">🏷️</a>
 					</li>
 				</ul>
 			</div>

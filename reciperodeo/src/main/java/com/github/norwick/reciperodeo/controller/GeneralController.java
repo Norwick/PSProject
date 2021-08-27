@@ -1,7 +1,13 @@
 package com.github.norwick.reciperodeo.controller;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
@@ -15,15 +21,20 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.view.RedirectView;
 
 import com.github.norwick.reciperodeo.domain.Recipe;
+import com.github.norwick.reciperodeo.domain.Tag;
 import com.github.norwick.reciperodeo.domain.User;
 import com.github.norwick.reciperodeo.service.RecipeService;
+import com.github.norwick.reciperodeo.service.TagService;
 import com.github.norwick.reciperodeo.service.UserService;
 
 /**
@@ -254,11 +265,14 @@ public class GeneralController {
 	@Autowired
 	RecipeService recipeService;
 	
+	@Autowired
+	TagService tagService;
+	
 	@PostMapping("/recipe")
 	public String recipeCreate(@Valid Recipe r, BindingResult bindingResult, HttpServletRequest request, Model model) {
 		if (bindingResult.hasErrors()) {
-			model.addAttribute(PN, "save_recipe");
-			return "save_recipe";
+			model.addAttribute(PN, "recipe");
+			return "recipe";
 		}
 		Optional<User> ou = getAuthenticatedUser();
 		if (ou.isEmpty()) {
@@ -311,7 +325,72 @@ public class GeneralController {
 		model.addAttribute(PN, "recipes");
 		return "recipes";
 	}
+	
+	@GetMapping("/recipe/tag/{id}")
+	public String addTags(@PathVariable UUID id, Model model) {
+		Optional<Recipe> or = recipeService.findById(id);
+		Optional<User> ou = getAuthenticatedUser();
+		if (or.isEmpty() || ou.isEmpty()) {
+			return "redirect:/" + LI;
+		}
+		Recipe r = or.get();
+		if (!r.getUser().equals(ou.get())) {
+			return "redirect:/" + LI;
+		}
+		
+		String tags = "";
+		Set<Tag> ts = r.getTags();
+		StringJoiner sj = new StringJoiner(",");
+		for (Tag t : ts) {
+			sj.add(t.getName());
+		}
+		System.out.println(sj.toString());
+		
+		model.addAttribute("id", id.toString());
+		model.addAttribute("title", r.getTitle());
+		model.addAttribute("tags", sj.toString());
+		model.addAttribute(PN, "addRecipeTags");
+		return "addRecipeTags";
+	}
+	
+	@PostMapping("/recipe/tag/{id}")
+	public String saveTags(@PathVariable UUID id, HttpServletRequest request, Model model) {
+		Optional<Recipe> or = recipeService.findById(id);
+		Optional<User> ou = getAuthenticatedUser();
+		if (or.isEmpty() || ou.isEmpty()) {
+			return "redirect:/" + LI;
+		}
+		Recipe r = or.get();
+		User u = ou.get();
+		if (!r.getUser().equals(ou.get())) {
+			return "redirect:/" + LI;
+		}
+		String tags = request.getParameter("tags");
+		String trimTags = tags.trim().replaceAll(" +", " ");
+		String[] splitTags = trimTags.split(",");
 
+		StringJoiner sj = new StringJoiner(",");
+		for (int i = 0; i < splitTags.length; ++i) {
+			splitTags[i] = splitTags[i].trim().toUpperCase();
+			Optional<Tag> ot = tagService.findByName(splitTags[i]);
+			if (ot.isEmpty()) {
+				ot = Optional.of(new Tag(splitTags[i]));
+			}
+			Tag t = ot.get();
+			t.addRecipe(r);
+			tagService.saveTag(t);
+			sj.add(splitTags[i]);
+		}
+		System.out.println(sj);
+		model.addAttribute("id", id.toString());
+		model.addAttribute("title", r.getTitle());
+		model.addAttribute("saved",true);
+		model.addAttribute("tags", sj.toString());
+		model.addAttribute(PN, "addRecipeTags");
+		return "addRecipeTags";
+	}
+	
+	
 	@GetMapping("/recipe/{id}")
 	public String recipeLookup(@PathVariable UUID id, Recipe r, Model model) {
 		//add edit button if they are the owner

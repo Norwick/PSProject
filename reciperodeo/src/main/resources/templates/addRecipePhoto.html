@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/general.html :: head">
+</head>
+<body>
+	<header th:replace="fragments/general.html :: header"> </header>
+	<div id="content">
+		<div id="photo">
+			<h2>Recipe Photo for <span th:text="${title}"></span></h2>
+			<form th:action="@{/recipephoto/{id}(id=${id})}" th:object="${r}" method="post" enctype="multipart/form-data">
+			    <input type="file" name="image" id="image" accept="image/png, image/jpeg" /><br>
+	  			<img id="preview" src="#" alt="recipe image preview" hidden/> <br>
+	  			<img id="big" src="#" alt="recipe image preview" hidden/><br>
+			    <button id="submit" type="submit" hidden>Submit Photo</button>
+			</form>
+		</div>
+	</div>
+	<script> //upload photo help credit: https://stackoverflow.com/a/4459419
+	image.onchange = evt => {
+		  const [file] = image.files
+		  if (file) {
+			submit.hidden = false;
+			preview.hidden = false;
+			big.hidden = false;
+		    preview.src = URL.createObjectURL(file);
+		    big.src = URL.createObjectURL(file);
+		  }
+		}
+	</script>
+	<footer th:replace="fragments/general.html :: footer"></footer>
+</body>
+</html>
+

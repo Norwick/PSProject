@@ -20,7 +20,7 @@
 				          th:value="${state}" 
 				          th:text="${state}"></option>
 				</select><br>
-				<span th:if="${#fields.hasErrors('state')}" the:errors="*{state}"></span>
+				<span th:if="${#fields.hasErrors('state')}" the:errors="*{state}"></span><br>
 				<input th:if="${recipeid != null}" type="text" th:field="*{id}" value="${recipeid}" hidden>
 				<input type="text" th:field="*{recipeJSON}" hidden>
 				<button type="submit" id="poster" hidden>Actually Save Recipe</button>

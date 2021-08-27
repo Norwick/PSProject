@@ -1,8 +1,8 @@
 package com.github.norwick.reciperodeo.domain;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -86,7 +86,7 @@ public class Recipe {
 	private String recipeJSON = "{}";
 	
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy="recipes")
-	private List<Tag> tags = new ArrayList<>();
+	private Set<Tag> tags = new HashSet<>();
 	
 	@ManyToOne(fetch = FetchType.EAGER)
 	private User user;
@@ -98,6 +98,7 @@ public class Recipe {
 	public Recipe(String title) {
 		this.title = title;
 	}
+	
 	
 	@Override
 	public boolean equals(Object obj) {
