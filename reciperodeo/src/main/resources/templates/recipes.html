@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/general.html :: head">
+</head>
+<body>
+	<header th:replace="fragments/general.html :: header"> </header>
+	<div id="content">
+		<div id="recipes">
+			<h2>My Recipes</h2>
+			<div th:if="${not #sets.isEmpty(recipeSet)}">
+				<ul>
+					<li th:each="r : ${recipeSet}">
+						*<a th:href="@{/recipe/{id}(id=${r.getId().toString()})}" th:text="${r.getTitle()}"></a>*
+					</li>
+				</ul>
+			</div>
+			<div id="add-recipe"><a th:href="@{/recipe}">+</a></div>
+		</div>
+	</div>
+	<footer th:replace="fragments/general.html :: footer"></footer>
+</body>
+</html>

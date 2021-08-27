@@ -1,8 +1,8 @@
 package com.github.norwick.reciperodeo.controller;
 
+import java.util.Date;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -17,10 +17,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.github.norwick.reciperodeo.domain.Recipe;
 import com.github.norwick.reciperodeo.domain.User;
+import com.github.norwick.reciperodeo.service.RecipeService;
 import com.github.norwick.reciperodeo.service.UserService;
 
 /**
@@ -240,5 +243,96 @@ public class GeneralController {
         }
 		return "redirect:/login?delete=true";
 		
+	}
+	
+	@GetMapping("/recipe")
+	public String recipe(Recipe r, Model model) {
+		model.addAttribute(PN, "recipe");
+		return "recipe";
+	}
+	
+	@Autowired
+	RecipeService recipeService;
+	
+	@PostMapping("/recipe")
+	public String recipeCreate(@Valid Recipe r, BindingResult bindingResult, HttpServletRequest request, Model model) {
+		if (bindingResult.hasErrors()) {
+			model.addAttribute(PN, "save_recipe");
+			return "save_recipe";
+		}
+		Optional<User> ou = getAuthenticatedUser();
+		if (ou.isEmpty()) {
+			return "redirect:/recipe";
+		}
+		User u = ou.get();
+		Optional<Recipe> or =( (r.getId() != null) ? recipeService.findById(r.getId()) : Optional.empty());
+		if (request.getParameter("loadOnly") != null) {
+			if (or.isPresent()) {
+				r = or.get();
+				if (!r.getUser().equals(u)) {
+					return "redirect:/recipe";
+				}
+				model.addAttribute("title", r.getTitle());
+				model.addAttribute("state", r.getState());
+				model.addAttribute("loadOnly", true);
+			} else {
+				return "redirect:/recipe";
+			}
+		} else {
+			if (or.isPresent()) {
+				Recipe orig = or.get();
+				orig.setEditTimestamp(new Date()); //unsure if needed
+				orig.setRecipeJSON(r.getRecipeJSON());
+				orig.setTitle(r.getTitle());
+				orig.setState(r.getState());
+				r = orig;
+			} else {
+				r.setCreationTimestamp(new Date()); //stopgap
+			}
+			r.setUser(u);
+			r = recipeService.saveRecipe(r);
+			model.addAttribute("rsaved", true);
+		}
+		model.addAttribute(PN, "recipe");
+		String recipeJ = r.getRecipeJSON();
+		model.addAttribute("recipeJson", recipeJ);
+		model.addAttribute("recipeid", r.getId().toString());
+		return "recipe";
+	}
+	
+	@GetMapping("/recipes")
+	public String recipes(Model model) {
+		Optional<User> ou = getAuthenticatedUser();
+		if (ou.isEmpty()) {
+			return "redirect:/" + LI;
+		}
+		User u = ou.get();
+		model.addAttribute("recipeSet", u.getRecipes());
+		model.addAttribute(PN, "recipes");
+		return "recipes";
+	}
+
+	@GetMapping("/recipe/{id}")
+	public String recipeLookup(@PathVariable UUID id, Recipe r, Model model) {
+		//add edit button if they are the owner
+		Optional<Recipe> or = recipeService.findById(id);
+		if (or.isEmpty()) {
+			return "redirect:/" + LI;
+		}
+		r = or.get();
+		Optional<User> ou = getAuthenticatedUser();
+		boolean editor = false;
+		if (ou.isPresent() && r.getUser().equals(ou.get())) {
+			editor = true;
+			model.addAttribute("editor", editor);
+		}
+		if (r.getState() != Recipe.Visibility.PUBLIC && !editor) {
+			return "redirect:/" + LI;
+		}
+		model.addAttribute("creator", r.getUser().getUsername());
+		model.addAttribute("r", r);
+		model.addAttribute("recipeJson", r.getRecipeJSON());
+		model.addAttribute(PN, "viewRecipe");
+    	return "viewRecipe";
 	}
 }

@@ -4,9 +4,7 @@
 </head>
 <body>
 	<header th:replace="fragments/general.html :: header"> </header>
-	
 	<div id="content">
-		<!-- implement this for real... (no validation currently) -->
 		<div id="profile">
 			<h2>Profile</h2>
 			<div class="msg" th:if="${msg != null}" th:text="${msg}">

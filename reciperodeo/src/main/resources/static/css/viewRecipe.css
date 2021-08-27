@@ -1,0 +1,28 @@
+#recipe li, #recipe ol, #recipe h3,  #recipe h4 {
+	margin: 0;
+	padding: 0;
+}
+
+#recipe h3 {
+	margin-top: 1rem;
+}
+
+#recipe button {
+	border-radius: 50%;
+	background-color: var(--accent);
+	width: 3rem;
+	height: 3rem;
+	line-height: 3rem;
+	color: White;
+	font-size: 1.5rem;
+	text-align: center;
+	position: fixed;
+	bottom: 3rem;
+	right: 1rem;
+	box-shadow: 0.2rem 0.2rem 0.2rem Black;
+}
+
+#recipe button:hover {
+	background-color: var(--darkbg);
+	cursor: pointer;
+}

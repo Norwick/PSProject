@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/general.html :: head">
+</head>
+<body>
+	<header th:replace="fragments/general.html :: header"> </header>
+	<div id="content">
+		<div id="recipe">
+			<form th:if="${creator != null}" action="#" th:action="@{/recipe}" th:object="${r}" method="post">
+				<input type="text" th:field="*{id}" th:value="${r.getId()}" hidden>
+				<input type="checkbox" id="loadOnly" name="loadOnly" checked hidden>
+				<button type="submit">✏️</button>
+			</form>
+			<div id="generated">
+				<div id="ingredients">
+				</div>
+				<div id="instructions">
+				</div>
+			</div>
+		</div>
+	</div>
+	<script src="/js/recipe.js"></script>
+	<script th:if="${recipeJson != null}">
+		viewOnly("[[${recipeJson}]]");
+	</script>
+	<footer th:replace="fragments/general.html :: footer"></footer>
+</body>
+</html>

@@ -12,6 +12,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
@@ -81,6 +82,7 @@ public class Recipe {
 	@NotNull
 	private String title = "";
 	
+	@Lob
 	private String recipeJSON = "{}";
 	
 	@ManyToMany(fetch = FetchType.EAGER, mappedBy="recipes")

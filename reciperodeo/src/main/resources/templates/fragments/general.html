@@ -8,17 +8,17 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sulphur+Point:wght@700&display=swap" rel="stylesheet">
 <link th:href="@{/css/general.css}" rel="stylesheet"/>
-<link th:href="'css/' + ${page_name} + '.css'" rel="stylesheet" />
+<link th:href="'/css/' + ${page_name} + '.css'" rel="stylesheet" />
 </head>
 <body>
 	<header th:fragment="header">
-		<span id="site-name"><a th:href="@{../index}">Recipe Rodeo</a></span>
+		<span id="site-name"><a th:href="@{/index}">Recipe Rodeo</a></span>
 		<nav>
 			<ul>
-				<li><a href="#">Recipes</a></li>
+				<li><a th:href="@{/recipes}">Recipes</a></li>
 				<li><a href="#">Tags</a></li>
-				<li><a sec:authorize="isAuthenticated()" th:href="@{../profile}">Profile</a>
-					<a sec:authorize="!isAuthenticated()" th:href="@{../login}">Login</a>
+				<li><a sec:authorize="isAuthenticated()" th:href="@{/profile}">Profile</a>
+					<a sec:authorize="!isAuthenticated()" th:href="@{/login}">Login</a>
 				</li>
 				<li>
 		        	<form sec:authorize="!isAuthenticated()" th:action="@{/register}" method="post" class="nav-form">
@@ -36,7 +36,7 @@
 		</form>
 	</header>
 	<footer th:fragment="footer">
-		Created by Norwick Lee, 2021 | <a th:href="@{../contact}">Contact</a>
+		Created by Norwick Lee, 2021 | <a th:href="@{/contact}">Contact</a>
 	</footer>
 </body>
 </html>

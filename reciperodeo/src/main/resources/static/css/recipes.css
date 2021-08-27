@@ -1,0 +1,42 @@
+#add-recipe {
+	border-radius: 50%;
+	background-color: var(--accent);
+	width: 3rem;
+	height: 3rem;
+	line-height: 3rem;
+	color: White;
+	font-size: 3rem;
+	text-align: center;
+	position: fixed;
+	bottom: 3rem;
+	right: 1rem;
+	box-shadow: 0.2rem 0.2rem 0.2rem Black;
+}
+
+#add-recipe:hover {
+	background-color: var(--darkbg);
+}
+
+#content li a {
+	color: Black;
+	text-transform: uppercase;
+	text-align: center;
+}
+
+#content {
+	text-align: center;
+}
+
+#content li {
+	font-size: 3rem;
+	color: var(--accent);
+}
+
+h2 {
+	font-size: 5rem;
+	margin: 0;
+}
+
+#content li a:hover {
+	color: var(--accent);
+}

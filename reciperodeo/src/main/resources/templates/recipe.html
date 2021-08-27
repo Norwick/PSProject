@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/general.html :: head">
+</head>
+<body>
+	<header th:replace="fragments/general.html :: header"> </header>
+	<div id="content">
+		<div id="recipe">
+			<div class="msg" th:if="${rsaved != null}">
+			    Recipe saved successfully!<br>
+			    <a th:href="@{/recipe}">Create new recipe?</a>
+			</div>
+			<form action="#" th:action="@{/recipe}" th:object="${recipe}" method="post">
+				<h2><label th:for="${#ids.next('title')}">Recipe Title:</label></h2>
+				<input type="text" th:field="*{title}"><br>
+				<span th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span><br>
+				<label th:for="${#ids.next('state')}">Discoverability:</label><br>
+				<select th:field="*{state}">
+				  <option th:each="state : ${T(com.github.norwick.reciperodeo.domain.Recipe.Visibility).values()}" 
+				          th:value="${state}" 
+				          th:text="${state}"></option>
+				</select><br>
+				<span th:if="${#fields.hasErrors('state')}" the:errors="*{state}"></span>
+				<input th:if="${recipeid != null}" type="text" th:field="*{id}" value="${recipeid}" hidden>
+				<input type="text" th:field="*{recipeJSON}" hidden>
+				<button type="submit" id="poster" hidden>Actually Save Recipe</button>
+			</form>
+			<div id="saved">
+				<div id="ingredients">
+				</div>
+				<div id="instructions">
+				</div>
+			</div>
+			<!-- pretty sure this is insecure oh well -->
+			<button id ="saver">Save Recipe</button>
+		</div>
+		<script src="js/recipe.js"></script>
+		<script th:if="${recipeJson != null}">
+			populatedSetup("[[${recipeJson}]]");
+		</script>
+		<script th:if="${recipeJson == null}">
+			emptySetup();
+		</script>
+		<script th:if="${loadOnly != null}">
+			setNonJson("[[${title}]]", "[[${state}]]");
+		</script>
+	</div>
+	<footer th:replace="fragments/general.html :: footer"></footer>
+</body>
+</html>
