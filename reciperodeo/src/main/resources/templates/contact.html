@@ -7,19 +7,27 @@
 	<!-- haha this form makes such an ugly email -->
 	<div id="content">
 		<div id="contact">
-			<h2>Contact Us</h2>
-			<!-- implement via js and spring after this -->
-			<form name="contact-form" action="mailto:norwick.ko.lee@gmail.com" method="POST" enctype=”multipart/form-data”>
-			<label for="contact-name">Name:</label><br>
-			<input type="text" name="contact-name" id="contact-name" th:value="${username}" required><br><br>
-			<label for="contact-email">Email:</label><br>
-			<input type="email" name="contact-email" id="contact-email" required><br><br>
-			<label for="contact-subject">Subject:</label><br>
-			<input type="text" name="contact-subject" id="contact-subject"><br><br>
-			<label for="contact-message">Message:</label><br>
-			<textarea name="contact-message" id="contact-message" required></textarea><br><br>
-			<button type="submit" style="font-weight:bold;">Submit</button> 
-			<!--  inline styling -->
+			<div id="msg" th:if="${param.sent != null}">Message Sent!</div>
+			<h2>Contact Us</h2> <!-- not implementing it via spring email bc then I would need to be careful about not exposing my gmail password -->
+			<form name="contact-form" action="#" th:action="@{/contact}" th:object=${cm} method="POST">
+				
+				<label th:for="${#ids.next('name')}">Name:</label><br>
+				<input type="text" th:field="*{name}" th:value="${cm.getName()}" required><br>
+				<span th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></span><br>
+				
+				<label th:for="${#ids.next('email')}">Email:</label><br>
+				<input type="email" th:field="*{email}" th:value="${cm.getEmail()}" required><br>
+				<span th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></span><br>
+				
+				<label th:for="${#ids.next('subject')}">Subject:</label><br>
+				<input type="text" th:field="*{subject}"><br>
+				<span th:if="${#fields.hasErrors('subject')}" th:errors="*{subject}"></span><br>
+				
+				<label th:for="${#ids.next('message')}">Message:</label><br>
+				<textarea th:field="*{message}" required></textarea><br>
+				<span th:if="${#fields.hasErrors('message')}" th:errors="*{message}"></span><br>
+				
+				<button type="submit" style="font-weight:bold;">Submit</button>
 			</form>
 		</div>
 	</div>

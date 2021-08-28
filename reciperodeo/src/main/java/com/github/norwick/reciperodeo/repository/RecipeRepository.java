@@ -22,5 +22,10 @@ public interface RecipeRepository extends CrudRepository<Recipe, UUID> {
 
 	List<Recipe> findAll();
 	
+	/**
+	 * Used to get a list of the 28 most recent public recipes, but technically you could also get the 28 most recent private recipes
+	 * @param state visibility level
+	 * @return list of 28 most recent recipes of provided state
+	 */
 	List<Recipe> findTop28ByStateOrderByCreationTimestampDesc(Visibility state);
 }

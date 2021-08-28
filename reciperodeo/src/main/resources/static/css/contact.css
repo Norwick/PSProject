@@ -24,3 +24,12 @@
 	background-color: var(--darkbg);
 	color: Black;
 }
+
+
+
+#msg {
+	background-color: var(--softbg);
+	color: Black;
+	font-style: italic;
+	padding: 0.2rem;	
+}

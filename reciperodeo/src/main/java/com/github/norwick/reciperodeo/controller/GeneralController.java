@@ -28,9 +28,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.github.norwick.reciperodeo.domain.ContactMessage;
 import com.github.norwick.reciperodeo.domain.Recipe;
 import com.github.norwick.reciperodeo.domain.Tag;
 import com.github.norwick.reciperodeo.domain.User;
+import com.github.norwick.reciperodeo.service.ContactMessageService;
 import com.github.norwick.reciperodeo.service.RecipeService;
 import com.github.norwick.reciperodeo.service.TagService;
 import com.github.norwick.reciperodeo.service.UserService;
@@ -56,7 +58,7 @@ public class GeneralController {
 	private static final String I = "index";
 	private static final String T = "title";
 	private static final String ART = "addRecipeTags";
-	
+	private static final String C = "contact";
 
 	@Autowired
 	BCryptPasswordEncoder encoder;
@@ -172,11 +174,40 @@ public class GeneralController {
 	 * @param model model shared with html page
 	 * @return string that leads to web page for contact
 	 */
-	@GetMapping("/contact")
-	public String contact(@RequestParam(name=U, required=false, defaultValue="Anon") String username, Model model) {
-		model.addAttribute(U,username);
-		model.addAttribute(PN, "contact");
-		return "contact";
+	@GetMapping("/" + C)
+	public String contact(ContactMessage cm, Model model) {
+		Optional<User> ou = getAuthenticatedUser();
+		if (ou.isEmpty()) {
+			cm.setName("anon");
+			cm.setEmail("");
+		} else {
+			cm.setName(ou.get().getUsername());
+			cm.setEmail(ou.get().getEmail());
+		}
+		model.addAttribute(PN, C);
+		model.addAttribute("cm", cm);
+		return C;
+	}
+	
+	@Autowired
+	ContactMessageService contactMessageService;
+	
+	/**
+	 * Saves a valid contact message to database
+	 * @param cm message to save
+	 * @param bindingResult result of binding parameters to contact message
+	 * @param model way to share info with page
+	 * @return page to go to
+	 */
+	@PostMapping("/" + C)
+	public String contactSave(@Valid ContactMessage cm, BindingResult bindingResult, Model model) {
+		if (bindingResult.hasErrors()) {
+			model.addAttribute(PN, C);
+			model.addAttribute("cm", cm);
+			return C;
+		}
+		contactMessageService.saveContactMessage(cm);
+		return RR + C + "?sent=true";
 	}
 	
 	/**
@@ -269,7 +300,7 @@ public class GeneralController {
 	 * @return page that handles recipe creation
 	 */
 	@GetMapping("/" + RE)
-	public String recipe(Recipe r, Model model) {
+	public String recipe(Recipe recipe, Model model) {
 		model.addAttribute(PN, RE);
 		return RE;
 	}
