@@ -2,6 +2,7 @@ package com.github.norwick.reciperodeo.controller;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +24,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.github.norwick.reciperodeo.domain.Recipe;
@@ -40,10 +44,18 @@ import com.github.norwick.reciperodeo.service.UserService;
 public class GeneralController {
 	
 	//ironically bad names but i want lint to shush
+	private static final String RR = "redirect:/";
 	private static final String PN = "page_name";
 	private static final String R = "register";
+	private static final String RE = "recipe";
+	private static final String RES = "recipes";
 	private static final String LI = "login";
 	private static final String LO = "logout";
+	private static final String P = "profile";
+	private static final String U = "username";
+	private static final String I = "index";
+	private static final String T = "title";
+	private static final String ART = "addRecipeTags";
 	
 
 	@Autowired
@@ -74,25 +86,31 @@ public class GeneralController {
 	 * @param model model shared with html page
 	 * @return string that leads to web page for profile
 	 */
-	@GetMapping("/profile")
+	@GetMapping("/" + P)
 	public String profile(Model model) {
 		Optional<User> ou = getAuthenticatedUser();
-		if (ou.isEmpty()) return "redirect:/" + LO;
+		if (ou.isEmpty()) return RR + LO;
 		User u = ou.get();
-		model.addAttribute("username", u.getUsername());
+		model.addAttribute(U, u.getUsername());
 		model.addAttribute("email", u.getEmail());
 		boolean s = u.getSearchable();
 		model.addAttribute("schecked",s);
 		String sS = s ? "On" : "Off";
 		model.addAttribute("searchable", sS);
-		model.addAttribute(PN, "profile"); //redundant but oh well works for this
-		return "profile";
+		model.addAttribute(PN, P); //redundant but oh well works for this
+		return P;
 	}
 	
-	@PostMapping("/profile")
+	/**
+	 * Takes requests to alter user information by user and saves or rejects it
+	 * @param request contains post information about user change property
+	 * @param model way to share info with web page
+	 * @return profile page
+	 */
+	@PostMapping("/" + P)
 	public String profileSave(HttpServletRequest request, Model model) {
 		Optional<User> ou = getAuthenticatedUser();
-		if (ou.isEmpty()) return "redirect:/" + LO;
+		if (ou.isEmpty()) return RR + LO;
 		User u = ou.get();
 		String newUsername = request.getParameter("newusername");
 		String newEmail = request.getParameter("newemail");
@@ -120,18 +138,18 @@ public class GeneralController {
 		} catch (DataIntegrityViolationException e) {
 			model.addAttribute("msg",changeVar + " is invalid");
 			ou = userService.findById(u.getId());
-			if (ou.isEmpty()) return "redirect:/" + LO;
+			if (ou.isEmpty()) return RR + LO;
 			u = ou.get();
 		}
 		
-		model.addAttribute("username", u.getUsername());
+		model.addAttribute(U, u.getUsername());
 		model.addAttribute("email", u.getEmail());
 		boolean s = u.getSearchable();
 		model.addAttribute("schecked",s);
 		String sS = s ? "On" : "Off";
 		model.addAttribute("searchable", sS);
-		model.addAttribute(PN, "profile"); //redundant but oh well works for this
-		return "profile";
+		model.addAttribute(PN, P); //redundant but oh well works for this
+		return P;
 	}
 	
 	
@@ -140,10 +158,12 @@ public class GeneralController {
 	 * @param model model to store values to pass to web page
 	 * @return string that leads to web page for index
 	 */
-	@GetMapping({"/", "/index"})
+	@GetMapping({"/", "/" + I})
 	public String index(Model model) {
-		model.addAttribute(PN, "index");
-		return "index";
+		List<Recipe> lr = recipeService.findByStateOrderByCreationTimestamp(Recipe.Visibility.PUBLIC);
+		model.addAttribute("recipeList", lr);
+		model.addAttribute(PN, I);
+		return I;
 	}
 	
 	/**
@@ -153,8 +173,8 @@ public class GeneralController {
 	 * @return string that leads to web page for contact
 	 */
 	@GetMapping("/contact")
-	public String contact(@RequestParam(name="username", required=false, defaultValue="Anon") String username, Model model) {
-		model.addAttribute("username",username);
+	public String contact(@RequestParam(name=U, required=false, defaultValue="Anon") String username, Model model) {
+		model.addAttribute(U,username);
 		model.addAttribute(PN, "contact");
 		return "contact";
 	}
@@ -165,7 +185,7 @@ public class GeneralController {
 	 * @param model model used to pass infor to web page
 	 * @return string that leads to web page for register
 	 */
-	@GetMapping("/register")
+	@GetMapping("/" + R)
 	public String register(User user, Model model) {
 		model.addAttribute(PN, R);
 		return R;
@@ -178,7 +198,7 @@ public class GeneralController {
 	 * @param model model used to pass info to web page
 	 * @return string that leads to correct web page
 	 */
-	@PostMapping("/register")
+	@PostMapping("/" + R)
 	public String checkUser(@Valid User user, BindingResult bindingResult, Model model) {
 		if (bindingResult.hasErrors()) {
 			model.addAttribute(PN, R);
@@ -186,7 +206,7 @@ public class GeneralController {
 		}
 		if(userService.findByUsername(user.getUsername()).isPresent()) {
 			model.addAttribute(PN, R);
-			bindingResult.rejectValue("username", "error.username.exists", "The username is already in use.");
+			bindingResult.rejectValue(U, "error.username.exists", "The username is already in use.");
 			return R;
 		}
 		
@@ -205,34 +225,28 @@ public class GeneralController {
 		userService.saveUser(newUser);
 		
 		model.addAttribute("registered", true);
-		return "redirect:/index";
+		return RR + I;
 	}
-
 	
 	/**
 	 * login mapping for get requests
 	 * @param model model passed to page
 	 * @return location of login page
 	 */
-	@GetMapping("/login")
+	@RequestMapping(value = "/" + LI, method = { RequestMethod.GET, RequestMethod.POST })
 	public String loginGet(Model model) {
 		model.addAttribute(PN, LI);
 		return LI;
-	}
-
-	/**
-	 * login mapping for post requests
-	 * @param model model passed to page
-	 * @return location of login page
-	 */
-	@PostMapping("/login")
-	public String login(Model model) {
-		model.addAttribute(PN, LI);
-		return LI;
+		//probably can delete the postmapping but don't want to bugcheck for it rn
 	}
 	
+	/**
+	 * Lets user delete their account. Currently doesn't check where post request came from...
+	 * @param request shares post variables
+	 * @return redirect page
+	 */
 	//prolly bad security
-	@PostMapping("/delete")
+	@PostMapping("/user/delete")
 	public String delete(HttpServletRequest request) {
 		Optional<User> ou = getAuthenticatedUser();
 		if (ou.isPresent()) {
@@ -244,14 +258,20 @@ public class GeneralController {
         if(session != null) {
             session.invalidate();
         }
-		return "redirect:/login?delete=true";
+		return RR + LI + "?delete=true";
 		
 	}
 	
-	@GetMapping("/recipe")
+	/**
+	 * Provides page where you can create a recipe
+	 * @param r recipe to be bound to by page's create recipe form
+	 * @param model way to pass info to page
+	 * @return page that handles recipe creation
+	 */
+	@GetMapping("/" + RE)
 	public String recipe(Recipe r, Model model) {
-		model.addAttribute(PN, "recipe");
-		return "recipe";
+		model.addAttribute(PN, RE);
+		return RE;
 	}
 	
 	@Autowired
@@ -260,102 +280,138 @@ public class GeneralController {
 	@Autowired
 	TagService tagService;
 	
-	@PostMapping("/recipe")
+	/**
+	 * Handles creation of recipe
+	 * @param r recipe that is being edited/saved
+	 * @param bindingResult issues with binding provided form info to a recipe
+	 * @param request way to access post parameters
+	 * @param model way to pass info to page
+	 * @return page that handles request
+	 */
+	@PostMapping("/" + RE)
 	public String recipeCreate(@Valid Recipe r, BindingResult bindingResult, HttpServletRequest request, Model model) {
 		if (bindingResult.hasErrors()) {
-			model.addAttribute(PN, "recipe");
-			return "recipe";
+			model.addAttribute(PN, RE);
+			return RE;
 		}
 		Optional<User> ou = getAuthenticatedUser();
 		if (ou.isEmpty()) {
-			return "redirect:/recipe";
+			return RR + RE;
 		}
 		User u = ou.get();
 		Optional<Recipe> or =( (r.getId() != null) ? recipeService.findById(r.getId()) : Optional.empty());
-		if (request.getParameter("loadOnly") != null) {
-			if (or.isPresent()) {
-				r = or.get();
-				if (!r.getUser().equals(u)) {
-					return "redirect:/recipe";
-				}
-				model.addAttribute("title", r.getTitle());
-				model.addAttribute("state", r.getState());
-				model.addAttribute("loadOnly", true);
-			} else {
-				return "redirect:/recipe";
+		if (or.isPresent()) {
+			Recipe orig = or.get();
+			if (!orig.getUser().equals(u)) {
+				return RR + RE;
 			}
+			orig.setRecipeJSON(r.getRecipeJSON());
+			orig.setTitle(r.getTitle());
+			orig.setState(r.getState());
+			orig.setEmoji(r.getEmoji());
+			r = orig;
 		} else {
-			if (or.isPresent()) {
-				Recipe orig = or.get();
-				orig.setEditTimestamp(new Date()); //unsure if needed
-				orig.setRecipeJSON(r.getRecipeJSON());
-				orig.setTitle(r.getTitle());
-				orig.setState(r.getState());
-				r = orig;
-			} else {
-				r.setCreationTimestamp(new Date()); //stopgap
-			}
+			r.setCreationTimestamp(new Date()); //stopgap
 			r.setUser(u);
-			r = recipeService.saveRecipe(r);
-			model.addAttribute("rsaved", true);
 		}
-		model.addAttribute(PN, "recipe");
-		String recipeJ = r.getRecipeJSON();
-		model.addAttribute("recipeJson", recipeJ);
+		r.setEditTimestamp(new Date()); //unsure if needed
+		r = recipeService.saveRecipe(r);
+		model.addAttribute("rsaved", true);
+		model.addAttribute(PN, RE);
+		model.addAttribute(RE, r);
+		model.addAttribute("recipeJson", r.getRecipeJSON());
 		model.addAttribute("recipeid", r.getId().toString());
-		return "recipe";
+		return RE;
 	}
 	
-	@GetMapping("/recipes")
+	/**
+	 * Place user can look up their owned recipes
+	 * @param model way to pass info to page
+	 * @return page that handles request
+	 */
+	@GetMapping("/" + RES)
 	public String recipes(Model model) {
 		Optional<User> ou = getAuthenticatedUser();
 		if (ou.isEmpty()) {
-			return "redirect:/" + LI;
+			return RR + LI;
 		}
 		User u = ou.get();
 		model.addAttribute("recipeSet", u.getRecipes());
-		model.addAttribute(PN, "recipes");
-		return "recipes";
+		model.addAttribute(PN, RES);
+		return RES;
 	}
 	
-	@GetMapping("/recipe/tag/{id}")
+	/**
+	 * Place to provide info on current wanted tags for recipe
+	 * @param id id of recipe
+	 * @param model way to pass info to web page
+	 * @return web page that handles request
+	 */
+	@GetMapping("/" + RE + "/tag/{id}")
 	public String addTags(@PathVariable UUID id, Model model) {
 		Optional<Recipe> or = recipeService.findById(id);
 		Optional<User> ou = getAuthenticatedUser();
 		if (or.isEmpty() || ou.isEmpty()) {
-			return "redirect:/" + LI;
+			return RR + LI;
 		}
 		Recipe r = or.get();
 		if (!r.getUser().equals(ou.get())) {
-			return "redirect:/" + LI;
+			return RR + LI;
 		}
 		
-		String tags = "";
 		Set<Tag> ts = r.getTags();
 		StringJoiner sj = new StringJoiner(",");
 		for (Tag t : ts) {
 			sj.add(t.getName());
 		}
-		System.out.println(sj.toString());
 		
 		model.addAttribute("id", id.toString());
-		model.addAttribute("title", r.getTitle());
+		model.addAttribute(T, r.getTitle());
 		model.addAttribute("tags", sj.toString());
-		model.addAttribute(PN, "addRecipeTags");
-		return "addRecipeTags";
+		model.addAttribute(PN, ART);
+		return ART;
 	}
 	
-	@PostMapping("/recipe/tag/{id}")
+
+	/**
+	 * Saves tags to specified recipe if user is valid for recipe
+	 * @param id id of recipe
+	 * @param request request containing tags to save
+	 * @param model way to pass info to web page
+	 * @return page that handles request
+	 */
+	@PostMapping("/" + RE + "/delete/{id}")
+	public String deleteRecipe(@PathVariable UUID id, Model model) {
+		Optional<User> ou = getAuthenticatedUser();
+		Optional<Recipe> or = recipeService.findById(id);
+		if (ou.isEmpty() || or.isEmpty()) {
+			return RR + I;
+		}
+		Recipe r = or.get();
+		if (!r.getUser().equals(ou.get())) {
+			return RR + I;
+		}
+		recipeService.removeRecipe(r);
+		return RR + RES + "?delete=true";
+		
+	}
+	/**
+	 * Saves tags to specified recipe if user is valid for recipe
+	 * @param id id of recipe
+	 * @param request request containing tags to save
+	 * @param model way to pass info to web page
+	 * @return page that handles request
+	 */
+	@PostMapping("/" + RE + "/tag/{id}")
 	public String saveTags(@PathVariable UUID id, HttpServletRequest request, Model model) {
 		Optional<Recipe> or = recipeService.findById(id);
 		Optional<User> ou = getAuthenticatedUser();
 		if (or.isEmpty() || ou.isEmpty()) {
-			return "redirect:/" + LI;
+			return RR + LI;
 		}
 		Recipe r = or.get();
-		User u = ou.get();
 		if (!r.getUser().equals(ou.get())) {
-			return "redirect:/" + LI;
+			return RR + LI;
 		}
 		String tags = request.getParameter("tags");
 		String trimTags = tags.trim().replaceAll(" +", " ");
@@ -373,22 +429,27 @@ public class GeneralController {
 			tagService.saveTag(t);
 			sj.add(splitTags[i]);
 		}
-		System.out.println(sj);
 		model.addAttribute("id", id.toString());
-		model.addAttribute("title", r.getTitle());
+		model.addAttribute(T, r.getTitle());
 		model.addAttribute("saved",true);
 		model.addAttribute("tags", sj.toString());
-		model.addAttribute(PN, "addRecipeTags");
-		return "addRecipeTags";
+		model.addAttribute(PN, ART);
+		return ART;
 	}
 	
 	
-	@GetMapping("/recipe/{id}")
+	/**
+	 * Lets user view public and owned recipes
+	 * @param id id of recipe
+	 * @param r recipe itself
+	 * @param model way to pass info to web site
+	 * @return web page that handles request
+	 */
+	@GetMapping("/" + RE + "/{id}")
 	public String recipeLookup(@PathVariable UUID id, Recipe r, Model model) {
-		//add edit button if they are the owner
 		Optional<Recipe> or = recipeService.findById(id);
 		if (or.isEmpty()) {
-			return "redirect:/" + LI;
+			return RR + LI;
 		}
 		r = or.get();
 		Optional<User> ou = getAuthenticatedUser();
@@ -398,7 +459,7 @@ public class GeneralController {
 			model.addAttribute("editor", editor);
 		}
 		if (r.getState() != Recipe.Visibility.PUBLIC && !editor) {
-			return "redirect:/" + LI;
+			return RR + LI;
 		}
 		SimpleDateFormat sdf = new SimpleDateFormat("MMMMM dd, yyyy");
 		String createDate = sdf.format(r.getCreationTimestamp());
@@ -414,10 +475,41 @@ public class GeneralController {
 		model.addAttribute("createDate", createDate);
 		model.addAttribute("editDate", editDate);
 		model.addAttribute("tags", sj.toString());
-		model.addAttribute("title", r.getTitle());
+		model.addAttribute(T, r.getTitle());
 		model.addAttribute("r", r);
+		model.addAttribute("emoji", r.getEmoji());
 		model.addAttribute("recipeJson", r.getRecipeJSON());
 		model.addAttribute(PN, "viewRecipe");
     	return "viewRecipe";
+	}
+	
+	/**
+	 * Lets user edit previously created recipe
+	 * @param id id of recipe
+	 * @param r recipe to populate and pass
+	 * @param model passes info to the page
+	 * @return page that handles request
+	 */
+	@PostMapping("/" + RE + "/{id}")
+	public String knownRecipeEdit(@PathVariable UUID id, Recipe r, Model model) {
+		Optional<User> ou = getAuthenticatedUser();
+		Optional<Recipe> or = recipeService.findById(id);
+		if (ou.isEmpty() || or.isEmpty()) {
+			return RR + I;
+		}
+		r = or.get();
+		User u = ou.get();
+		if (!r.getUser().equals(u)) {
+			return RR + RE + "/" + id;
+		}
+		model.addAttribute(RE, r);
+		model.addAttribute(T, r.getTitle());
+		model.addAttribute("emoji", r.getEmoji());
+		model.addAttribute("state", r.getState());
+		model.addAttribute("loadOnly", true);
+		model.addAttribute(PN, RE);
+		model.addAttribute("recipeJson", r.getRecipeJSON());
+		model.addAttribute("recipeid", r.getId().toString());
+		return RE;
 	}
 }

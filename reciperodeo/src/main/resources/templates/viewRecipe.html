@@ -6,12 +6,11 @@
 	<header th:replace="fragments/general.html :: header"> </header>
 	<div id="content">
 		<div id="recipe">
-			<form th:if="${creator != null}" action="#" th:action="@{/recipe}" th:object="${r}" method="post">
+			<form th:if="${creator != null}" action="#" th:action="@{/recipe/{id}(id=${r.getId().toString()})}" method="post">
 				<input type="text" th:field="*{id}" th:value="${r.getId()}" hidden>
-				<input type="checkbox" id="loadOnly" name="loadOnly" checked hidden>
 				<button type="submit">✏️</button>
 			</form>
-			<h2 th:text="${title}"></h2>
+			<h2 th:text="${emoji + title}"></h2>
 			By <span th:text="${creator}"></span> <br>
 			Created <span th:text="${createDate}"></span><br>
 			Edited <span th:text="${editDate}"></span><br>

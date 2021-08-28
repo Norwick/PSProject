@@ -44,3 +44,13 @@ h2 {
 #content li a:hover {
 	color: var(--accent);
 }
+
+#delmsg {
+	width: 100%;
+	opacity: 0.8;
+	font-style: italic;
+	background-color: var(--accent);
+	color: White;
+	border-style: none;
+	font-size: 1.5rem;
+}

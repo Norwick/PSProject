@@ -3,6 +3,7 @@ package com.github.norwick.reciperodeo.domain;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -18,6 +19,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.ColumnTransformer;
 import org.hibernate.annotations.CreationTimestamp;
@@ -82,6 +84,10 @@ public class Recipe {
 	@NotNull
 	private String title = "";
 	
+	@NotNull
+	@Size(min=1, max=2)
+	private String emoji = "🍕";
+	
 	@Lob
 	private String recipeJSON = "{}";
 	
@@ -100,6 +106,22 @@ public class Recipe {
 	}
 	
 	
+	/**
+	 * Gets three or less tags of recipe and returns string representing it
+	 * @return string representing three or less tags the recipe has
+	 */
+	public String getFirstThreeTagString() {
+		if (tags.isEmpty()) return "None";
+		StringJoiner sj = new StringJoiner(", ");
+		int i = 0;
+		for (Tag t : tags) {
+			if (i > 2) break;
+			i++;
+			sj.add(t.getName());
+		}
+		return sj.toString();
+	}
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) return false;
@@ -111,5 +133,10 @@ public class Recipe {
 	@Override
 	public int hashCode() {
 		return this.id.hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return this.title + ": Created on " + this.creationTimestamp;
 	}
 }

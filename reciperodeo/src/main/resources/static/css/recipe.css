@@ -23,8 +23,28 @@ select, input, textarea {
 	margin-bottom: 0.5rem;
 }
 
+#persistence {
+	display: flex;
+	justify-content: center;
+}
+
+#deleteform {
+	display: inline-block;
+	width: 	50%;
+}
+
+#deleter {
+	width: 100%;
+}
+
 #content {
 	font-size: 1.5rem;
+}
+
+#saver {
+	width: 50%;
+	display: inline-block;
+	
 }
 
 #content button {

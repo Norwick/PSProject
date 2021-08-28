@@ -6,10 +6,12 @@
 	<header th:replace="fragments/general.html :: header"> </header>
 	<div id="content">
 		<div id="recipes">
+			<div th:if="${(param.delete != null) && (param.delete[0] == 'true')}" id="delmsg">Successfully Deleted <span th:text="${dtitle}"></span></div>
 			<h2>My Recipes</h2>
 			<div th:if="${not #sets.isEmpty(recipeSet)}">
 				<ul>
 					<li th:each="r : ${recipeSet}">
+						<span th:text="${r.getEmoji()}"></span>
 						*<a th:href="@{/recipe/{id}(id=${r.getId().toString()})}" th:text="${r.getTitle()}"></a>*
 						<a class="tag" th:href="@{/recipe/tag/{id}(id=${r.getId().toString()})}">🏷️</a>
 					</li>

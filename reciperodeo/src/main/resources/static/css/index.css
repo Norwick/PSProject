@@ -29,9 +29,10 @@
 #content li {
 	margin-top: 1rem;
 }
-.recipe-image {
+.recipe-emoji {
 	width: 5rem;
 	height: 5rem;
+	font-size: 5rem;
 	margin-right: 1rem;
 	vertical-align: top;
 }

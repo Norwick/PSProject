@@ -6,6 +6,7 @@
 	<header th:replace="fragments/general.html :: header"> </header>
 	<div id="content">
 		<div id="recipe">
+			<!--  emoji picker from https://www.cssscript.com/fg-emoji-picker/ -->
 			<div class="msg" th:if="${rsaved != null}">
 			    Recipe saved successfully!<br>
 			    <a th:href="@{/recipe}">Create new recipe?</a>
@@ -14,6 +15,8 @@
 				<h2><label th:for="${#ids.next('title')}">Recipe Title:</label></h2>
 				<input type="text" th:field="*{title}"><br>
 				<span th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span><br>
+				<input type="text" th:field="*{emoji}" hidden>
+				<button type="button" id="emojib"></button>
 				<label th:for="${#ids.next('state')}">Discoverability:</label><br>
 				<select th:field="*{state}">
 				  <option th:each="state : ${T(com.github.norwick.reciperodeo.domain.Recipe.Visibility).values()}" 
@@ -31,10 +34,18 @@
 				<div id="instructions">
 				</div>
 			</div>
-			<!-- pretty sure this is insecure oh well -->
-			<button id ="saver">Save Recipe</button>
+			<div id="persistence">
+				<button id ="saver">Save Recipe</button>
+				
+				<form id="deleteform" th:action="@{/recipe/delete/{id}(id=${recipeid})}" method="post">
+					<button id="deleter" type="submit" class="delete">Delete Recipe</button>
+				</form>
+			</div>
 		</div>
-		<script src="js/recipe.js"></script>
+		<script th:if="${loadOnly == null}" src="js/fgEmojiPicker.js"></script>
+		<script th:if="${loadOnly != null}" src="../js/fgEmojiPicker.js"></script>
+		<script th:if="${loadOnly == null}"  src="js/recipe.js"></script>
+		<script th:if="${loadOnly != null}"  src="../js/recipe.js"></script>
 		<script th:if="${recipeJson != null}">
 			populatedSetup("[[${recipeJson}]]");
 		</script>
@@ -43,6 +54,26 @@
 		</script>
 		<script th:if="${loadOnly != null}">
 			setNonJson("[[${title}]]", "[[${state}]]");
+		</script>
+		<script>
+			let emojiButton = document.getElementById('emojib');
+			if (emojiButton != null && emojiButton != undefined) {
+				let emojiInput = document.getElementById('emoji');
+				emojiButton.innerText = emojiInput.value;
+			}
+			let isLoadOnly = [[${loadOnly} != null ? true:false]];
+			let d = (isLoadOnly? '../js/' : 'js/')
+			new FgEmojiPicker({
+			    dir: d,
+			    preFetch: true,
+			    trigger: ['#emojib', '#emoji'],
+			    position: ['bottom', 'right'],
+			    emit(obj, triggerElement) {
+			      const emj = obj.emoji;
+			      document.getElementById('emoji').value = emj;
+			      document.getElementById('emojib').innerText = emj;
+			    }
+			});
 		</script>
 	</div>
 	<footer th:replace="fragments/general.html :: footer"></footer>

@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.data.repository.CrudRepository;
 
 import com.github.norwick.reciperodeo.domain.Recipe;
+import com.github.norwick.reciperodeo.domain.Recipe.Visibility;
 
 /**
  * Repository for Recipe implemented by Spring
@@ -20,4 +21,6 @@ public interface RecipeRepository extends CrudRepository<Recipe, UUID> {
 	List<Recipe> findByTitleContaining(String title);
 
 	List<Recipe> findAll();
+	
+	List<Recipe> findTop28ByStateOrderByCreationTimestampDesc(Visibility state);
 }

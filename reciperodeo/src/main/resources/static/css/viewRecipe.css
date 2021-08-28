@@ -22,6 +22,34 @@
 	box-shadow: 0.2rem 0.2rem 0.2rem Black;
 }
 
+#recipe h2 {
+	padding-top: 1rem;
+	margin-bottom: 0rem;
+}
+
+#content {
+	font-size: 1.5rem;
+	width: 80%;
+	margin:auto;
+}
+
+#recipe h4 {
+	margin-top: 0.5rem;
+}
+
+#recipe {
+	padding-bottom: 1rem;
+}
+
+#instructions ol li {
+	list-style: number;
+}
+
+#instructions ol li li, #ingredients ol li li {
+	list-style: circle;
+	margin-left: 1rem;
+}
+
 #recipe button:hover {
 	background-color: var(--darkbg);
 	cursor: pointer;

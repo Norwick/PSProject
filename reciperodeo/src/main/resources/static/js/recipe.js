@@ -1,3 +1,9 @@
+//credit: https://stackoverflow.com/a/34064434
+function htmlDecode(input) {
+  let doc = new DOMParser().parseFromString(input, "text/html");
+  return doc.documentElement.textContent;
+}
+
 class IngredientInfo {
     constructor() {
         this.ingredientSections = [];
@@ -58,7 +64,7 @@ class IngredientSection {
 		this.ingredients.splice(i, 1);
 	}
 	setTitle(t) {
-		this.title = t;
+		this.title = htmlDecode(t);
 	}
 	getTitle() {
 		return this.title;
@@ -83,7 +89,7 @@ class InstructionSection {
 		this.setInstruction[i] = ins;
 	}
 	setTitle(t) {
-		this.title = t;
+		this.title = htmlDecode(t);
 	}
 	getTitle() {
 		return this.title;
@@ -100,19 +106,19 @@ class Ingredient {
 		this.notes = [];
 	}
 	setName(n) {
-		this.name = n;
+		this.name = htmlDecode(n);
 	}
 	setAmount(a) {
-		this.amount = a;
+		this.amount = htmlDecode(a);
 	}
 	addNote(n) {
-		this.notes.push(n);
+		this.notes.push(htmlDecode(n));
 	}
 	getNote(i) {
 		return this.notes[i];
 	}
 	setNote(i, n) {
-		this.notes[i] = n;
+		this.notes[i] = htmlDecode(n);
 	}
 	removeNote(i) {
 		this.notes.splice(i, 1);
@@ -134,16 +140,16 @@ class Instruction {
 		this.notes = [];
 	}
 	setInfo(inf) {
-		this.info = inf;
+		this.info = htmlDecode(inf);
 	}
 	addNote(n) {
-		this.notes.push(n);
+		this.notes.push(htmlDecode(n));
 	}
 	getNote(i) {
 		return this.notes[i];
 	}
 	setNote(i, n) {
-		this.notes[i] = n;
+		this.notes[i] = htmlDecode(n);
 	}
 	removeNote(i) {
 		this.notes.splice(i, 1);
@@ -163,7 +169,7 @@ function removeSec() {
 
 function createLabel(parent, labelTypeText, classText) {
 	let l = document.createElement("label");
-	l.innerText = labelTypeText;
+	l.innerHTML = labelTypeText;
 	l.classList.add(classText);
 	parent.appendChild(l);
 }
@@ -199,7 +205,7 @@ function createLineBreak(parent) {
 function createDeleteButton(parent, classText) {
 	let del = document.createElement("button");
 	del.type = "button";
-	del.innerText = "❌";
+	del.innerHTML = "❌";
 	del.classList.add(classText);
 	del.classList.add("del");
 	del.addEventListener('click', removeSec);
@@ -209,7 +215,7 @@ function createDeleteButton(parent, classText) {
 
 function createAddButton(parent, childTypeText, addAction, classText) {
 	let b = document.createElement("button");
-	b.innerText = "Add " + childTypeText;
+	b.innerHTML = "Add " + childTypeText;
 	b.addEventListener('click', addAction);
 	b.classList.add(classText);
 	b.classList.add("add");
@@ -244,13 +250,13 @@ function addNote(noteList) {
 
 function addNoteValue(noteList, noteJS) {
 	let note = document.createElement("li");
-	createTextAreaDeleteAndLabel(note, "Note", "note").value = noteJS;
+	createTextAreaDeleteAndLabel(note, "Note", "note").value = htmlDecode(noteJS);
 	noteList.appendChild(note);
 }
 
 function viewNote(noteList, noteJS) {
 	let note = document.createElement("li");
-	note.innerText = noteJS;
+	note.innerHTML = noteJS;
 	noteList.appendChild(note);
 }
 
@@ -274,9 +280,9 @@ function addIngredient(ingredientList) {
 function addIngredientValue(ingredientList, ingJS) {
 	let ing = document.createElement("li");
 	ingredientList.appendChild(ing);
-	createInputDeleteAndLabel(ing, "Ingredient Name", "ing").value = ingJS.name;
+	createInputDeleteAndLabel(ing, "Ingredient Name", "ing").value = htmlDecode(ingJS.name);
 	createLineBreak(ing);
-	createInputAndLabel(ing, "Ingredient Amount", "ing").value = ingJS.amount;
+	createInputAndLabel(ing, "Ingredient Amount", "ing").value = htmlDecode(ingJS.amount);
 	let noteList = createOrderedList(ing);
 	createLineBreak(ing);
 	createAddButton(ing, "Ingredient Note", addNoteViaButton, "note");
@@ -292,11 +298,11 @@ function viewIngredient(ingredientList, ingJS) {
 	ingredientList.appendChild(ing);
 	
 	let name = document.createElement("h4");
-	name.innerText = ingJS.name;
+	name.innerHTML = ingJS.name;
 	ing.appendChild(name);
 	
 	let amount = document.createElement("span");
-	amount.innerText = ingJS.amount;
+	amount.innerHTML = ingJS.amount;
 	ing.appendChild(amount);
 	
 	let noteList = createOrderedList(ing);
@@ -322,7 +328,7 @@ function addInstructionValue(instructionList, insJS) {
 	let ins = document.createElement("li");
 	instructionList.appendChild(ins);
 	
-	createTextAreaDeleteAndLabel(ins, "Instruction", "ins").value = insJS.info;
+	createTextAreaDeleteAndLabel(ins, "Instruction", "ins").value = htmlDecode(insJS.info);
 	createLineBreak(ins);
 	let noteList = createOrderedList(ins);
 	createLineBreak(ins);
@@ -338,7 +344,7 @@ function viewInstruction(instructionList, insJS) {
 	let ins = document.createElement("li");
 	instructionList.appendChild(ins);
 	
-	ins.innerText = insJS.info;
+	ins.innerHTML = insJS.info;
 	let noteList = createOrderedList(ins);
 	
 	let size = insJS.notes.length;
@@ -380,7 +386,7 @@ function addInsSection() {
 function addIngSectionValue(ingSecJS) {
 	let ingSec = document.createElement("li");
 	ingHTML.lastElementChild.previousElementSibling.appendChild(ingSec);
-	createInputDeleteAndLabel(ingSec, "Ingredient Section Title", "ingsec").value = ingSecJS.title;
+	createInputDeleteAndLabel(ingSec, "Ingredient Section Title", "ingsec").value = htmlDecode(ingSecJS.title);
 	let ingredientList = createOrderedList(ingSec);
 	createLineBreak(ingSec);
 	createAddButton(ingSec, "Ingredient", addIngredientViaButton, "ing");
@@ -396,7 +402,7 @@ function viewIngSection(ingSecJS) {
 	ingHTML.appendChild(ingSec);
 	
 	let title = document.createElement("h3");
-	title.innerText = ingSecJS.title;
+	title.innerHTML = ingSecJS.title;
 	ingSec.appendChild(title);
 	
 	let ingredientList = createOrderedList(ingSec);
@@ -411,7 +417,7 @@ function addInsSectionValue(insSecJS) {
 	let insSec = document.createElement("li");
 	insHTML.lastElementChild.previousElementSibling.appendChild(insSec);
 	
-	createInputDeleteAndLabel(insSec, "Instruction Section Title", "inssec").value = insSecJS.title;
+	createInputDeleteAndLabel(insSec, "Instruction Section Title", "inssec").value = htmlDecode(insSecJS.title);
 	let instructionList = createOrderedList(insSec);
 	createLineBreak(insSec);
 	createAddButton(insSec, "Instruction", addInstructionViaButton, "ins");
@@ -427,7 +433,7 @@ function viewInsSection(insSecJS) {
 	insHTML.appendChild(insSec);
 	
 	let title = document.createElement("h3");
-	title.innerText = insSecJS.title;
+	title.innerHTML = insSecJS.title;
 	insSec.appendChild(title);
 	
 	let instructionList = createOrderedList(insSec);
@@ -464,7 +470,7 @@ function viewIngredients(ingInfoJS) {
 
 function setUpInstructions() {
 	createOrderedList(insHTML);
-	createAddButton(insHTML, "Instruction Section", addIngSection, "inssec");
+	createAddButton(insHTML, "Instruction Section", addInsSection, "inssec");
 	addInsSection();
 }
 
@@ -482,6 +488,12 @@ function viewInstructions(insInfoJS) {
 	createOrderedList(insHTML);
 	for (let i = 0; i < size; ++i) {
 		viewInsSection(insInfoJS.instructionSections[i]);
+	}
+}
+
+function deleteRecipe(event) {
+	if (!confirm("Are you sure you want to delete?")) {
+		event.preventDefault();
 	}
 }
 
@@ -547,6 +559,8 @@ function saveRecipe() {
 function emptySetup() {
 	const saver = document.getElementById("saver");
 	saver.addEventListener('click', saveRecipe);
+	const deleter = document.getElementById("deleter");
+	deleter.addEventListener('click', deleteRecipe);
 	setUpIngredients();
 	setUpInstructions();
 }
@@ -554,6 +568,9 @@ function emptySetup() {
 function populatedSetup(recipeJSString) {
 	const saver = document.getElementById("saver");
 	saver.addEventListener('click', saveRecipe);
+	const deleter = document.getElementById("deleter");
+	deleter.addEventListener('click', deleteRecipe);
+	
 	let correctString = recipeJSString.replaceAll("&quot;", '"');
 	const recipeJS = JSON.parse(correctString);
 	setUpIngredientsValue(recipeJS.ingInfoJS);
@@ -561,7 +578,7 @@ function populatedSetup(recipeJSString) {
 }
 
 function setNonJson(title, state) {
-	document.getElementById("title").value = title;
+	document.getElementById("title").value = htmlDecode(title);
 	document.getElementById("state").value = state;
 }
 
@@ -571,5 +588,6 @@ function viewOnly(recipeJSString) {
 	viewIngredients(recipeJS.ingInfoJS);
 	viewInstructions(recipeJS.insInfoJS);
 }
+
 const ingHTML = document.getElementById('ingredients');
 const insHTML = document.getElementById('instructions');

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.github.norwick.reciperodeo.domain.Recipe;
+import com.github.norwick.reciperodeo.domain.Recipe.Visibility;
 import com.github.norwick.reciperodeo.domain.Tag;
 import com.github.norwick.reciperodeo.repository.RecipeRepository;
 
@@ -31,7 +32,19 @@ public class RecipeService {
 	 * @return list of recipes with titles containing the provided substring
 	 */
 	public List<Recipe> findByTitleContaining(String title) {
+		if (title == null) throw new NullPointerException("Title is null");
 		return this.recipeRepository.findByTitleContaining(title);
+	}
+	
+	/**
+	 * Searches for 28 recipes with provided state and orders by newest first.
+	 * This oddly specific number is solely because it looks good on my resolution. I apologize.
+	 * @param state state to search for
+	 * @return list of 28 recipes with provided state ordered by newest first
+	 */
+	public List<Recipe> findByStateOrderByCreationTimestamp(Visibility state) {
+		if (state == null) throw new NullPointerException("State is null");
+		return this.recipeRepository.findTop28ByStateOrderByCreationTimestampDesc(state);
 	}
 	
 	/**

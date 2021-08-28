@@ -34,5 +34,12 @@ class RecipeServiceTest {
 		Assertions.assertFalse(rs.existsById(id));
 		Assertions.assertEquals(count, rs.count());
 	}
+	
+	//needs empty database to test, so visual confirmation for now that number of private is same
+	@Test
+	void testFindByStateOrderByCreationTimeStamp() {
+		System.out.println("Private:\n" + rs.findByStateOrderByCreationTimestamp(Recipe.Visibility.PRIVATE));
+		System.out.println("Public:\n" + rs.findByStateOrderByCreationTimestamp(Recipe.Visibility.PUBLIC));
+	}
 
 }
