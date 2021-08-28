@@ -18,6 +18,23 @@
 	flex-direction: row;
 }
 
+#content {
+	width: 98%;
+	display: block;
+}
+
+#trending-recipes h2 {
+	background-color: White;
+    top: 4rem;
+	position: sticky;
+	margin: 0;
+}
+
+#trending-recieps {
+	display: block;
+	width: 100%;
+}
+
 #trending-recipes a {
 	color: Black;
 }
@@ -62,4 +79,50 @@
 
 #add-recipe:hover {
 	background-color: var(--darkbg);
+}
+
+#page {
+	width: 100%;
+	text-align: center;
+}
+
+#content button {
+	background-color: var(--accent);
+	color: White;
+	border-style: none;
+	font-size: 1.5rem;
+	cursor: pointer;
+	width: 3rem;
+	height: 3rem;
+	border-radius: 3rem;
+	margin: 0.5rem;
+}
+
+#content button:hover {
+	background-color: var(--darkbg);
+	color: Black;
+}
+
+#content #tag-search button {
+	width: fit-content;
+}
+
+#tag-search {
+	text-align: center;
+}
+
+#tag-search input, #tag-search label {
+	font-size: 1.5rem;
+}
+
+
+#msg {
+	opacity: 0.7;
+	background-color: var(--softbg);
+	color: Black;
+	font-style: italic;
+	width: fit-content;
+	margin: auto;
+	padding: 0.2rem;
+	padding-bottom: 0.1rem;
 }

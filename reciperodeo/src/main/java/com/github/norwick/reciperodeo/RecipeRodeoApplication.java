@@ -8,7 +8,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 /**
  * Tells Spring to load all configurations and create the application
  */
-@SpringBootApplication
+@SpringBootApplication()
 public class RecipeRodeoApplication {
 	
 	/**

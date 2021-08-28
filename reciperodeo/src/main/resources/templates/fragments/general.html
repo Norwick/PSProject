@@ -16,7 +16,7 @@
 		<nav>
 			<ul>
 				<li><a th:href="@{/recipes}">Recipes</a></li>
-				<li><a href="#">Tags</a></li>
+				<li><a th:href="@{/tagsearch}">Tags</a></li>
 				<li><a sec:authorize="isAuthenticated()" th:href="@{/profile}">Profile</a>
 					<a sec:authorize="!isAuthenticated()" th:href="@{/login}">Login</a>
 				</li>
@@ -30,9 +30,9 @@
 	        	</li>
 			</ul>
 		</nav>
-		<form>
-		<input type="text" placeholder="Search for recipes">
-		<button>🔎</button>
+		<form action="#" th:action="@{/search/}">
+			<input type="text" name="title" placeholder="Search for recipes">
+			<button type="submit">🔎</button>
 		</form>
 	</header>
 	<footer th:fragment="footer">

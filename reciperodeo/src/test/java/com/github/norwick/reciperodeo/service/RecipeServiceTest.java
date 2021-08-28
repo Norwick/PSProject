@@ -38,8 +38,15 @@ class RecipeServiceTest {
 	//needs empty database to test, so visual confirmation for now that number of private is same
 	@Test
 	void testFindByStateOrderByCreationTimeStamp() {
-		System.out.println("Private:\n" + rs.findByStateOrderByCreationTimestamp(Recipe.Visibility.PRIVATE));
-		System.out.println("Public:\n" + rs.findByStateOrderByCreationTimestamp(Recipe.Visibility.PUBLIC));
+		System.out.println("Private:\n" + rs.findByStateOrderByCreationTimestamp(Recipe.Visibility.PRIVATE, 0, 10));
+		System.out.println("Public:\n" + rs.findByStateOrderByCreationTimestamp(Recipe.Visibility.PUBLIC, 1, 10));
+	}
+	
+	//needs empty database to test, so visual confirmation for now
+	@Test
+	void testSearch() {
+		System.out.println(rs.searchPublicRecipes("b", 0, 10).getContent());
+		System.out.println(rs.searchPublicRecipes("B", 0, 10).getContent());
 	}
 
 }

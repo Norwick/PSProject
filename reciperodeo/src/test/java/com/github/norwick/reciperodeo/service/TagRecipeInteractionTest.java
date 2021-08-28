@@ -1,5 +1,8 @@
 package com.github.norwick.reciperodeo.service;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,5 +82,16 @@ class TagRecipeInteractionTest {
 		ts.removeTag(ts.findById(t1.getId()).get());
 		ts.removeTag(ts.findById(t2.getId()).get());
 		rs.removeRecipe(rs.findById(r1.getId()).get());
+	}
+	
+
+	
+	//needs empty database to test, so visual confirmation for now
+	@Test
+	void testTagSearch() {
+		List<Tag> t = new ArrayList<>();
+		t.add(ts.findByName("SALTY").get());
+		t.add(ts.findByName("OIL").get());
+		System.out.println(rs.searchByTag(t, 0, 28));
 	}
 }

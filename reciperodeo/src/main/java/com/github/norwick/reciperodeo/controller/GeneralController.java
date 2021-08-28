@@ -7,14 +7,16 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-import org.aspectj.weaver.ast.Or;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -43,7 +45,7 @@ import com.github.norwick.reciperodeo.service.UserService;
  *
  */
 @Controller
-public class GeneralController {
+public class GeneralController implements ErrorController {
 	
 	//ironically bad names but i want lint to shush
 	private static final String RR = "redirect:/";
@@ -59,6 +61,9 @@ public class GeneralController {
 	private static final String T = "title";
 	private static final String ART = "addRecipeTags";
 	private static final String C = "contact";
+	private static final String F = "forbidden";
+	private static final String E = "error";
+	private static final String S = "search";
 
 	@Autowired
 	BCryptPasswordEncoder encoder;
@@ -66,6 +71,27 @@ public class GeneralController {
 	@Autowired
 	UserService userService;
 	
+	/**
+	 * Error page
+	 * @param model used to pass info to web page
+	 * @return provided web page
+	 */
+	@RequestMapping("/" + E)
+	public String err(Model model) {
+		model.addAttribute(PN, "simple");
+		return E;
+	}
+	
+	/**
+	 * Access forbidden with no logout
+	 * @param model used to pass info to web page
+	 * @return provided web page
+	 */
+	@GetMapping("/" + F)
+	public String forbid(Model model) {
+		model.addAttribute(PN, "simple");
+		return F;
+	}
 
 	private Optional<User> getAuthenticatedUser() {
 		if (!SecurityContextHolder.getContext().getAuthentication().isAuthenticated()) {
@@ -157,20 +183,22 @@ public class GeneralController {
 	
 	/**
 	 * Maps index
+	 * @param page the page of results wanted to see (e.g. zero'th, first, etc)
 	 * @param model model to store values to pass to web page
 	 * @return string that leads to web page for index
 	 */
 	@GetMapping({"/", "/" + I})
-	public String index(Model model) {
-		List<Recipe> lr = recipeService.findByStateOrderByCreationTimestamp(Recipe.Visibility.PUBLIC);
-		model.addAttribute("recipeList", lr);
-		model.addAttribute(PN, I);
-		return I;
+	public String index(@RequestParam(required=true, defaultValue="0") int page, Model model) {
+		if (page < 0) page = 0;
+		Page<Recipe> pr = recipeService.searchPublicRecipes("", page, 28);
+		setUpSearch(pr, "", page, model);
+		model.addAttribute("source", I);
+		return S;
 	}
 	
 	/**
 	 * Maps contact
-	 * @param username username for user of current session
+	 * @param cm the filler for the contact message form to fill
 	 * @param model model shared with html page
 	 * @return string that leads to web page for contact
 	 */
@@ -207,6 +235,12 @@ public class GeneralController {
 			return C;
 		}
 		contactMessageService.saveContactMessage(cm);
+		cm.setCreationTimestamp(null);
+		cm.setEmail(null);
+		cm.setId(-1);
+		cm.setMessage(null);
+		cm.setName(null);
+		cm.setSubject(null);
 		return RR + C + "?sent=true";
 	}
 	
@@ -256,7 +290,7 @@ public class GeneralController {
 		userService.saveUser(newUser);
 		
 		model.addAttribute("registered", true);
-		return RR + I;
+		return RR + LI;
 	}
 	
 	/**
@@ -295,7 +329,7 @@ public class GeneralController {
 	
 	/**
 	 * Provides page where you can create a recipe
-	 * @param r recipe to be bound to by page's create recipe form
+	 * @param recipe recipe to be bound to by page's create recipe form
 	 * @param model way to pass info to page
 	 * @return page that handles recipe creation
 	 */
@@ -327,14 +361,14 @@ public class GeneralController {
 		}
 		Optional<User> ou = getAuthenticatedUser();
 		if (ou.isEmpty()) {
-			return RR + RE;
+			return RR + F;
 		}
 		User u = ou.get();
 		Optional<Recipe> or =( (r.getId() != null) ? recipeService.findById(r.getId()) : Optional.empty());
 		if (or.isPresent()) {
 			Recipe orig = or.get();
 			if (!orig.getUser().equals(u)) {
-				return RR + RE;
+				return RR + F;
 			}
 			orig.setRecipeJSON(r.getRecipeJSON());
 			orig.setTitle(r.getTitle());
@@ -382,12 +416,12 @@ public class GeneralController {
 	public String addTags(@PathVariable UUID id, Model model) {
 		Optional<Recipe> or = recipeService.findById(id);
 		Optional<User> ou = getAuthenticatedUser();
-		if (or.isEmpty() || ou.isEmpty()) {
-			return RR + LI;
+		if (or.isEmpty()) {
+			return RR + E;
 		}
 		Recipe r = or.get();
-		if (!r.getUser().equals(ou.get())) {
-			return RR + LI;
+		if (ou.isEmpty() || !r.getUser().equals(ou.get())) {
+			return RR + F;
 		}
 		
 		Set<Tag> ts = r.getTags();
@@ -415,12 +449,12 @@ public class GeneralController {
 	public String deleteRecipe(@PathVariable UUID id, Model model) {
 		Optional<User> ou = getAuthenticatedUser();
 		Optional<Recipe> or = recipeService.findById(id);
-		if (ou.isEmpty() || or.isEmpty()) {
-			return RR + I;
+		if (or.isEmpty()) {
+			return RR + E;
 		}
 		Recipe r = or.get();
-		if (!r.getUser().equals(ou.get())) {
-			return RR + I;
+		if (ou.isEmpty() || !r.getUser().equals(ou.get())) {
+			return RR + F;
 		}
 		recipeService.removeRecipe(r);
 		return RR + RES + "?delete=true";
@@ -437,12 +471,12 @@ public class GeneralController {
 	public String saveTags(@PathVariable UUID id, HttpServletRequest request, Model model) {
 		Optional<Recipe> or = recipeService.findById(id);
 		Optional<User> ou = getAuthenticatedUser();
-		if (or.isEmpty() || ou.isEmpty()) {
-			return RR + LI;
+		if (or.isEmpty()) {
+			return RR + E;
 		}
 		Recipe r = or.get();
-		if (!r.getUser().equals(ou.get())) {
-			return RR + LI;
+		if (ou.isEmpty() || !r.getUser().equals(ou.get())) {
+			return RR + F;
 		}
 		String tags = request.getParameter("tags");
 		String trimTags = tags.trim().replaceAll(" +", " ");
@@ -468,7 +502,6 @@ public class GeneralController {
 		return ART;
 	}
 	
-	
 	/**
 	 * Lets user view public and owned recipes
 	 * @param id id of recipe
@@ -480,7 +513,7 @@ public class GeneralController {
 	public String recipeLookup(@PathVariable UUID id, Recipe r, Model model) {
 		Optional<Recipe> or = recipeService.findById(id);
 		if (or.isEmpty()) {
-			return RR + LI;
+			return RR + E;
 		}
 		r = or.get();
 		Optional<User> ou = getAuthenticatedUser();
@@ -490,7 +523,7 @@ public class GeneralController {
 			model.addAttribute("editor", editor);
 		}
 		if (r.getState() != Recipe.Visibility.PUBLIC && !editor) {
-			return RR + LI;
+			return RR + F;
 		}
 		SimpleDateFormat sdf = new SimpleDateFormat("MMMMM dd, yyyy");
 		String createDate = sdf.format(r.getCreationTimestamp());
@@ -525,13 +558,13 @@ public class GeneralController {
 	public String knownRecipeEdit(@PathVariable UUID id, Recipe r, Model model) {
 		Optional<User> ou = getAuthenticatedUser();
 		Optional<Recipe> or = recipeService.findById(id);
-		if (ou.isEmpty() || or.isEmpty()) {
-			return RR + I;
+		if (or.isEmpty()) {
+			return RR + E;
 		}
 		r = or.get();
-		User u = ou.get();
-		if (!r.getUser().equals(u)) {
-			return RR + RE + "/" + id;
+		if (ou.isEmpty() || !r.getUser().equals(ou.get())) {
+			System.out.println("correctly here");
+			return RR + F;
 		}
 		model.addAttribute(RE, r);
 		model.addAttribute(T, r.getTitle());
@@ -543,4 +576,91 @@ public class GeneralController {
 		model.addAttribute("recipeid", r.getId().toString());
 		return RE;
 	}
+	
+	/**
+	 * Searches for all recipes 
+	 * @param title title substring of recipe titles
+	 * @param page the page we want in the repository of results
+	 * @param model way to pass info to web page
+	 * @return search page
+	 */
+	@GetMapping("/search")
+	public String search(@RequestParam String title, @RequestParam(required=true,defaultValue="0") int page, Model model) {
+		if (page < 0) {
+			return R + S + "?" + T + "=" + title + "&page=0";
+		}
+		Page<Recipe> pr = recipeService.searchPublicRecipes(title, page, 28);
+		setUpSearch(pr, title, page, model);
+		return S;
+	}
+	
+	/**
+	 * Searches for recipes that contain all tags provided that exist
+	 * @param tags list of potential tags
+	 * @param page page of tags to return
+	 * @param model how we pass info to web page
+	 * @return web page for tags
+	 */
+	@GetMapping("/tags")
+	public String tagSearch(@RequestParam(required=true,defaultValue="") List<String> tags, @RequestParam(required=true,defaultValue="0") int page, Model model) {
+		Page<Recipe> pr;
+		StringJoiner sj = new StringJoiner(", ");
+		if (tags.isEmpty()) {
+			model.addAttribute(PN, S);
+			return "tagsearch";
+		}
+		List<String> processed = tags.stream().map(s -> s.trim().replaceAll(" +", " ").toUpperCase()).collect(Collectors.toList());
+		List<Tag> validTags = tagService.getValidTags(processed);
+		if (tags.size() != validTags.size()) {
+			model.addAttribute("nonexistent", true);
+		}
+		if (validTags.isEmpty()) {
+			pr = Page.empty();
+		} else {
+			pr = recipeService.searchByTag(validTags, page, 28);
+		}
+		
+		if (pr.isEmpty()) {
+			for (String s : processed) {
+				sj.add(s);
+			}
+			model.addAttribute(PN, S);
+			model.addAttribute(T, sj.toString());
+			return "tagsearch";
+			
+		}
+
+		for (Tag t : validTags) {
+			sj.add(t.getName());
+		}
+		setUpSearch(pr, sj.toString(), page, model);
+		model.addAttribute("source", "tags");
+		return S;
+	}
+	
+	/**
+	 * returns page to search tags when there are no results
+	 * @param model model to share info with the page
+	 * @return empty tag search page
+	 */
+	@GetMapping("/tagsearch")
+	public String emptyTagSearch(Model model) {
+		model.addAttribute(PN, S);
+		return "tagsearch";
+	}
+	
+	//searches for public recipes based on title and page
+	private void setUpSearch(Page<Recipe> pr, String title, int page, Model model) {
+		if (pr.getTotalPages() > page + 1) {
+			model.addAttribute("next", true);
+		}
+		if (page > 0) {
+			model.addAttribute("prev", true);
+		}
+		model.addAttribute(T, title);
+		model.addAttribute("page", page);
+		model.addAttribute("recipeList", pr.getContent());
+		model.addAttribute(PN, S);
+	}
+	
 }

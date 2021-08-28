@@ -6,7 +6,7 @@
 	<header th:replace="fragments/general.html :: header"> </header>
 	<div id="content">
 		<div id="recipe">
-			<form th:if="${creator != null}" action="#" th:action="@{/recipe/{id}(id=${r.getId().toString()})}" method="post">
+			<form th:if="${editor != null}" action="#" th:action="@{/recipe/{id}(id=${r.getId().toString()})}" method="post">
 				<input type="text" th:field="*{id}" th:value="${r.getId()}" hidden>
 				<button type="submit">✏️</button>
 			</form>

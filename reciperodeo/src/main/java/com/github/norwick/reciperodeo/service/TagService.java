@@ -1,5 +1,6 @@
 package com.github.norwick.reciperodeo.service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -81,6 +82,22 @@ public class TagService {
 		t.setRecipes(new HashSet<>());
 		t = this.tagRepository.save(t);
 		this.tagRepository.delete(t);
+	}
+	
+	/**
+	 * Searches list of strings for valid tags
+	 * @param tags list of tag names
+	 * @return all tags that match tag names
+	 */
+	public List<Tag> getValidTags(List<String> tags) {
+		List<Tag> validTags = new ArrayList<>();
+		for (String ts : tags) {
+			Optional<Tag> ot = this.findByName(ts);
+			if (ot.isPresent()) {
+				validTags.add(ot.get());
+			}
+		}
+		return validTags;
 	}
 	
 	/**

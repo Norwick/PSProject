@@ -6,6 +6,10 @@ import org.springframework.stereotype.Service;
 import com.github.norwick.reciperodeo.domain.ContactMessage;
 import com.github.norwick.reciperodeo.repository.ContactMessageRepository;
 
+/**
+ * Service to save contact messages to database
+ * @author Norwick Lee
+ */
 @Service
 public class ContactMessageService {
 	@Autowired

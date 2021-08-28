@@ -4,8 +4,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.github.norwick.reciperodeo.domain.Recipe;
@@ -40,11 +45,14 @@ public class RecipeService {
 	 * Searches for 28 recipes with provided state and orders by newest first.
 	 * This oddly specific number is solely because it looks good on my resolution. I apologize.
 	 * @param state state to search for
+	 * @param pageNum the page number
+	 * @param pageSize the number of results per page
 	 * @return list of 28 recipes with provided state ordered by newest first
 	 */
-	public List<Recipe> findByStateOrderByCreationTimestamp(Visibility state) {
+	public List<Recipe> findByStateOrderByCreationTimestamp(Visibility state, int pageNum, int pageSize) {
 		if (state == null) throw new NullPointerException("State is null");
-		return this.recipeRepository.findTop28ByStateOrderByCreationTimestampDesc(state);
+		Pageable p = PageRequest.of(pageNum, pageSize);
+		return this.recipeRepository.findByStateOrderByCreationTimestampDesc(state, p).getContent();
 	}
 	
 	/**
@@ -105,5 +113,37 @@ public class RecipeService {
 	 */
 	public List<Recipe> findAll() {
 		return recipeRepository.findAll();
+	}
+	
+	/**
+	 * Searches for public recipes by title
+	 * @param title substring of title
+	 * @param pageNum page number looking up
+	 * @param pageSize size of page
+	 * @return list of matching recipes
+	 */
+	public Page<Recipe> searchPublicRecipes(String title, int pageNum, int pageSize) {
+		Pageable p = PageRequest.of(pageNum, pageSize);
+		return recipeRepository.findByStateAndTitleContainingOrderByCreationTimestampDesc(Recipe.Visibility.PUBLIC, title, p);
+	}
+	
+	/**
+	 * Searches for public recipes by list of tags
+	 * @param tags string list of tags
+	 * @param pageNum number of pages
+	 * @param pageSize size of pages
+	 * @return list of recipes that contain all valid tags
+	 */
+	public Page<Recipe> searchByTag(List<Tag> tags, int pageNum, int pageSize) {
+		Pageable p = PageRequest.of(pageNum, pageSize);
+		List<Recipe> lr = recipeRepository.findByStateAndTagsContainingOrderByCreationTimestampDesc(Recipe.Visibility.PUBLIC, tags.get(0));
+		if (tags.size() > 1) {
+			lr = lr.stream().filter(r -> {
+				Set<Tag> ts = r.getTags();
+				return ts.containsAll(tags);
+			}).collect(Collectors.toList());
+		}
+		
+		return new PageImpl<>(lr, p, lr.size());
 	}
 }

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:replace="fragments/general.html :: head">
+</head>
+<body>
+	<header th:replace="fragments/general.html :: header"> </header>
+	
+	<div id="content">
+		<div id="tag-search" th:if="${(source != null) && source == 'tags'}">
+			<div id="msg" th:if="${nonexistent != null}">Some searched for tags were not used by any recipes. Searching for recipes matching all other tags.</div>
+			<form action="#" th:action="@{/tags/}">
+				<label>Enter tags:</label>
+				<input type="text" name="tags">
+				<button type="submit">Search</button>
+			</form>
+		</div>
+		<div id="trending-recipes">
+			<div th:switch="${source}">
+				<h2 th:case="tags">Tag results for <span th:text="${title}"></span>:</h2>
+				<h2 th:case="index">Latest Recipes:</h2>
+				<h2 th:case="*">Search results for recipes containing "<span th:text="${title}"></span>" in their title:</h2>
+			</div>
+			<ul th:if="${not #lists.isEmpty(recipeList)}">
+				<li th:each="r : ${recipeList}">
+					<h3 class="recipe-name"><a th:href="@{/recipe/{id}(id=${r.getId().toString()})}" th:text="${r.getTitle()}"></a></h3>
+					<div class="recipe-body">
+						<a th:href="@{/recipe/{id}(id=${r.getId().toString()})}"><span class="recipe-emoji" th:text="${r.getEmoji()}"></span></a>
+						<div><a th:href="@{/recipe/{id}(id=${r.getId().toString()})}">
+							<span class="recipe-user" th:utext="'<b>Created by:</b><br>' + ${r.getUser().getUsername()}"></span><br>
+							<span class="recipe-tags" th:utext="'<b>Tags:</b><br>' + ${r.getFirstThreeTagString()}"></span>
+						</a></div>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<div id="page"><a  th:if="${prev != null}" th:href="@{?(title=${title},page=${page - 1})}"><button>←</button></a><a th:if="${next != null}" th:href="@{?(title=${title},page=${page + 1})}"><button>→</button></a></div>
+		<div th:if="${index != null}" id="add-recipe"><a th:href="@{/recipe}">+</a></div>
+	</div>
+	<footer th:replace="fragments/general.html :: footer"></footer>
+</body>
+</html>
