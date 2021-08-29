@@ -626,7 +626,6 @@ public class GeneralController implements ErrorController {
 			model.addAttribute(U.PN, U.S);
 			model.addAttribute(U.T, sj.toString());
 			return U.TS;
-			
 		}
 
 		for (Tag t : validTags) {
