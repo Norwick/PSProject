@@ -21,6 +21,8 @@
 			<div class="msg" th:if="${(param.delete != null) and (param.delete[0] == 'true')}">
 			    Successful Delete
 			</div>
+			<div class="msg" th:if="${(change != null)}" th:text="${change}">
+			</div>
 			<h2>Login</h2>
 			<form action="#" th:action="@{/login}" method="post">
 				<label for="username">Username:</label><br>

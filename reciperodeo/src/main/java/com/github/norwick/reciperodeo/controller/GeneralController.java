@@ -134,6 +134,13 @@ public class GeneralController implements ErrorController {
 			if (newUsername != null) {
 				changeVar = "Username";
 				u.setUsername(newUsername);
+				u = userService.saveUser(u);
+				HttpSession session= request.getSession(false);
+		        SecurityContextHolder.clearContext();
+		        if(session != null) {
+		            session.invalidate();
+		        }
+				return U.RR + U.LI;
 			} else if (newEmail != null) {
 				changeVar = "Email";
 				u.setEmail(newEmail);
@@ -142,6 +149,13 @@ public class GeneralController implements ErrorController {
 				if (newPassword.length() < 8) throw new DataIntegrityViolationException("Password is too short");
 				//directly validated since hashing changes the length
 				u.setHash(encoder.encode(newPassword));
+				u = userService.saveUser(u);
+				HttpSession session= request.getSession(false);
+		        SecurityContextHolder.clearContext();
+		        if(session != null) {
+		            session.invalidate();
+		        }
+				return U.RR + U.LI;
 			} else {
 				changeVar = "Searchable";
 				u.setSearchable(newSearchable != null);

@@ -47,6 +47,13 @@ function deleteEnsure(event) {
 	}
 }
 
+function changeEnsure(event) {
+	if(!confirm('You will be logged out upon change. Is that okay?')) {
+		event.preventDefault();
+		location.reload();
+	}
+}
+
 setupButtons("username");
 
 setupButtons("email");
@@ -56,3 +63,5 @@ setupButtons("password");
 setupButtons("searchable");
 
 document.getElementsByClassName("delete")[0].addEventListener('click', deleteEnsure);
+document.getElementById("username-button").addEventListener('click',changeEnsure);
+document.getElementById("password-button").addEventListener('click', changeEnsure);

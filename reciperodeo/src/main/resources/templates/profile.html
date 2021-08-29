@@ -27,7 +27,7 @@
 					<strong>Username: </strong>
 					<span class="username" th:text="${username}">Yub Jub</span>
 					<input class="username" name="newusername" type="text" th:value="${username}">
-					<button type="submit" class="save username">✔️</button>
+					<button id="username-button" type="submit" class="save username">✔️</button>
 					<button class="cancel username">❌</button>
 					<button class="edit username">✏️</button>
 			</form>
@@ -45,7 +45,7 @@
 				<strong>Password: </strong>
 				<span class="password">**********</span>
 				<input type="password" name="newpassword" class="password">
-				<button type="submit" class="save password">✔️</button>
+				<button id="password-button" type="submit" class="save password">✔️</button>
 				<button class="cancel password">❌</button>
 				<button class="edit password">✏️</button>
 			</form>

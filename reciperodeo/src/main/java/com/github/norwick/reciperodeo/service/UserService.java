@@ -54,8 +54,7 @@ public class UserService implements UserDetailsService {
 		u = userRepository.save(u);
 		Set<Recipe> rs = u.getRecipes();
 		for (Recipe r : rs) {
-			r.setUser(null);
-			recipeService.saveRecipe(r);
+			recipeService.removeRecipe(r);
 		}
 		userRepository.delete(u);
 	}
