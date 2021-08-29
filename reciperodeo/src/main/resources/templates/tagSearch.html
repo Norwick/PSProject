@@ -10,7 +10,7 @@
 			<div id="msg" th:if="${title != null}">No valid results returned for <span th:text="${title}"></span> provided.</div>
 			<form action="#" th:action="@{/tags/}">
 				<label>Enter tags:</label>
-				<input type="text" name="tags">
+				<input type="text" name="tags" placeholder="TAG,ANOTHER TAG">
 				<button type="submit">Search</button>
 			</form>
 		</div>
