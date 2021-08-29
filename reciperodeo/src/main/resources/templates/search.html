@@ -10,7 +10,7 @@
 			<div id="msg" th:if="${nonexistent != null}">Some searched for tags were not used by any recipes. Searching for recipes matching all other tags.</div>
 			<form action="#" th:action="@{/tags/}">
 				<label>Enter tags:</label>
-				<input type="text" name="tags">
+				<input type="text" name="tags" placeholder="TAG,ANOTHER TAG">
 				<button type="submit">Search</button>
 			</form>
 		</div>
