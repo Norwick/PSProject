@@ -35,6 +35,7 @@ import com.github.norwick.reciperodeo.domain.Recipe;
 import com.github.norwick.reciperodeo.domain.Tag;
 import com.github.norwick.reciperodeo.domain.User;
 import com.github.norwick.reciperodeo.service.ContactMessageService;
+import com.github.norwick.reciperodeo.service.MD5Util;
 import com.github.norwick.reciperodeo.service.RecipeService;
 import com.github.norwick.reciperodeo.service.TagService;
 import com.github.norwick.reciperodeo.service.UserService;
@@ -47,24 +48,6 @@ import com.github.norwick.reciperodeo.service.UserService;
 @Controller
 public class GeneralController implements ErrorController {
 	
-	//ironically bad names but i want lint to shush
-	private static final String RR = "redirect:/";
-	private static final String PN = "page_name";
-	private static final String R = "register";
-	private static final String RE = "recipe";
-	private static final String RES = "recipes";
-	private static final String LI = "login";
-	private static final String LO = "logout";
-	private static final String P = "profile";
-	private static final String U = "username";
-	private static final String I = "index";
-	private static final String T = "title";
-	private static final String ART = "addRecipeTags";
-	private static final String C = "contact";
-	private static final String F = "forbidden";
-	private static final String E = "error";
-	private static final String S = "search";
-
 	@Autowired
 	BCryptPasswordEncoder encoder;
 	
@@ -76,10 +59,10 @@ public class GeneralController implements ErrorController {
 	 * @param model used to pass info to web page
 	 * @return provided web page
 	 */
-	@RequestMapping("/" + E)
+	@RequestMapping("/" + U.E)
 	public String err(Model model) {
-		model.addAttribute(PN, "simple");
-		return E;
+		model.addAttribute(U.PN, "simple");
+		return U.E;
 	}
 	
 	/**
@@ -87,10 +70,10 @@ public class GeneralController implements ErrorController {
 	 * @param model used to pass info to web page
 	 * @return provided web page
 	 */
-	@GetMapping("/" + F)
+	@GetMapping("/" + U.F)
 	public String forbid(Model model) {
-		model.addAttribute(PN, "simple");
-		return F;
+		model.addAttribute(U.PN, "simple");
+		return U.F;
 	}
 
 	private Optional<User> getAuthenticatedUser() {
@@ -114,19 +97,20 @@ public class GeneralController implements ErrorController {
 	 * @param model model shared with html page
 	 * @return string that leads to web page for profile
 	 */
-	@GetMapping("/" + P)
+	@GetMapping("/" + U.P)
 	public String profile(Model model) {
 		Optional<User> ou = getAuthenticatedUser();
-		if (ou.isEmpty()) return RR + LO;
+		if (ou.isEmpty()) return U.RR + U.LO;
 		User u = ou.get();
-		model.addAttribute(U, u.getUsername());
+		model.addAttribute(U.US, u.getUsername());
+		model.addAttribute("gravatar", "https://www.gravatar.com/avatar/" + MD5Util.md5Hex(u.getEmail().toLowerCase()));
 		model.addAttribute("email", u.getEmail());
 		boolean s = u.getSearchable();
 		model.addAttribute("schecked",s);
 		String sS = s ? "On" : "Off";
 		model.addAttribute("searchable", sS);
-		model.addAttribute(PN, P); //redundant but oh well works for this
-		return P;
+		model.addAttribute(U.PN, U.P); //redundant but oh well works for this
+		return U.P;
 	}
 	
 	/**
@@ -135,10 +119,10 @@ public class GeneralController implements ErrorController {
 	 * @param model way to share info with web page
 	 * @return profile page
 	 */
-	@PostMapping("/" + P)
+	@PostMapping("/" + U.P)
 	public String profileSave(HttpServletRequest request, Model model) {
 		Optional<User> ou = getAuthenticatedUser();
-		if (ou.isEmpty()) return RR + LO;
+		if (ou.isEmpty()) return U.RR + U.LO;
 		User u = ou.get();
 		String newUsername = request.getParameter("newusername");
 		String newEmail = request.getParameter("newemail");
@@ -166,18 +150,19 @@ public class GeneralController implements ErrorController {
 		} catch (DataIntegrityViolationException e) {
 			model.addAttribute("msg",changeVar + " is invalid");
 			ou = userService.findById(u.getId());
-			if (ou.isEmpty()) return RR + LO;
+			if (ou.isEmpty()) return U.RR + U.LO;
 			u = ou.get();
 		}
 		
-		model.addAttribute(U, u.getUsername());
+		model.addAttribute(U.US, u.getUsername());
 		model.addAttribute("email", u.getEmail());
+		model.addAttribute("gravatar", "https://www.gravatar.com/avatar/" + MD5Util.md5Hex(u.getEmail().toLowerCase()));
 		boolean s = u.getSearchable();
 		model.addAttribute("schecked",s);
 		String sS = s ? "On" : "Off";
 		model.addAttribute("searchable", sS);
-		model.addAttribute(PN, P); //redundant but oh well works for this
-		return P;
+		model.addAttribute(U.PN, U.P); //redundant but oh well works for this
+		return U.P;
 	}
 	
 	
@@ -187,13 +172,13 @@ public class GeneralController implements ErrorController {
 	 * @param model model to store values to pass to web page
 	 * @return string that leads to web page for index
 	 */
-	@GetMapping({"/", "/" + I})
+	@GetMapping({"/", "/" + U.I})
 	public String index(@RequestParam(required=true, defaultValue="0") int page, Model model) {
 		if (page < 0) page = 0;
 		Page<Recipe> pr = recipeService.searchPublicRecipes("", page, 28);
 		setUpSearch(pr, "", page, model);
-		model.addAttribute("source", I);
-		return S;
+		model.addAttribute("source", U.I);
+		return U.S;
 	}
 	
 	/**
@@ -202,7 +187,7 @@ public class GeneralController implements ErrorController {
 	 * @param model model shared with html page
 	 * @return string that leads to web page for contact
 	 */
-	@GetMapping("/" + C)
+	@GetMapping("/" + U.C)
 	public String contact(ContactMessage cm, Model model) {
 		Optional<User> ou = getAuthenticatedUser();
 		if (ou.isEmpty()) {
@@ -212,9 +197,9 @@ public class GeneralController implements ErrorController {
 			cm.setName(ou.get().getUsername());
 			cm.setEmail(ou.get().getEmail());
 		}
-		model.addAttribute(PN, C);
+		model.addAttribute(U.PN, U.C);
 		model.addAttribute("cm", cm);
-		return C;
+		return U.C;
 	}
 	
 	@Autowired
@@ -227,12 +212,12 @@ public class GeneralController implements ErrorController {
 	 * @param model way to share info with page
 	 * @return page to go to
 	 */
-	@PostMapping("/" + C)
+	@PostMapping("/" + U.C)
 	public String contactSave(@Valid ContactMessage cm, BindingResult bindingResult, Model model) {
 		if (bindingResult.hasErrors()) {
-			model.addAttribute(PN, C);
+			model.addAttribute(U.PN, U.C);
 			model.addAttribute("cm", cm);
-			return C;
+			return U.C;
 		}
 		contactMessageService.saveContactMessage(cm);
 		cm.setCreationTimestamp(null);
@@ -241,7 +226,7 @@ public class GeneralController implements ErrorController {
 		cm.setMessage(null);
 		cm.setName(null);
 		cm.setSubject(null);
-		return RR + C + "?sent=true";
+		return U.RR + U.C + "?sent=true";
 	}
 	
 	/**
@@ -250,10 +235,10 @@ public class GeneralController implements ErrorController {
 	 * @param model model used to pass infor to web page
 	 * @return string that leads to web page for register
 	 */
-	@GetMapping("/" + R)
+	@GetMapping("/" + U.R)
 	public String register(User user, Model model) {
-		model.addAttribute(PN, R);
-		return R;
+		model.addAttribute(U.PN, U.R);
+		return U.R;
 	}
 	
 	/**
@@ -263,16 +248,16 @@ public class GeneralController implements ErrorController {
 	 * @param model model used to pass info to web page
 	 * @return string that leads to correct web page
 	 */
-	@PostMapping("/" + R)
+	@PostMapping("/" + U.R)
 	public String checkUser(@Valid User user, BindingResult bindingResult, Model model) {
 		if (bindingResult.hasErrors()) {
-			model.addAttribute(PN, R);
-			return R;
+			model.addAttribute(U.PN, U.R);
+			return U.R;
 		}
 		if(userService.findByUsername(user.getUsername()).isPresent()) {
-			model.addAttribute(PN, R);
-			bindingResult.rejectValue(U, "error.username.exists", "The username is already in use.");
-			return R;
+			model.addAttribute(U.PN, U.R);
+			bindingResult.rejectValue(U.US, "error.username.exists", "The username is already in use.");
+			return U.R;
 		}
 		
 		User newUser = new User();
@@ -290,7 +275,7 @@ public class GeneralController implements ErrorController {
 		userService.saveUser(newUser);
 		
 		model.addAttribute("registered", true);
-		return RR + LI;
+		return U.RR + U.LI;
 	}
 	
 	/**
@@ -298,10 +283,10 @@ public class GeneralController implements ErrorController {
 	 * @param model model passed to page
 	 * @return location of login page
 	 */
-	@RequestMapping(value = "/" + LI, method = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/" + U.LI, method = { RequestMethod.GET, RequestMethod.POST })
 	public String loginGet(Model model) {
-		model.addAttribute(PN, LI);
-		return LI;
+		model.addAttribute(U.PN, U.LI);
+		return U.LI;
 		//probably can delete the postmapping but don't want to bugcheck for it rn
 	}
 	
@@ -323,7 +308,7 @@ public class GeneralController implements ErrorController {
         if(session != null) {
             session.invalidate();
         }
-		return RR + LI + "?delete=true";
+		return U.RR + U.LI + "?delete=true";
 		
 	}
 	
@@ -333,10 +318,10 @@ public class GeneralController implements ErrorController {
 	 * @param model way to pass info to page
 	 * @return page that handles recipe creation
 	 */
-	@GetMapping("/" + RE)
+	@GetMapping("/" + U.RE)
 	public String recipe(Recipe recipe, Model model) {
-		model.addAttribute(PN, RE);
-		return RE;
+		model.addAttribute(U.PN, U.RE);
+		return U.RE;
 	}
 	
 	@Autowired
@@ -344,7 +329,7 @@ public class GeneralController implements ErrorController {
 	
 	@Autowired
 	TagService tagService;
-	
+
 	/**
 	 * Handles creation of recipe
 	 * @param r recipe that is being edited/saved
@@ -353,22 +338,22 @@ public class GeneralController implements ErrorController {
 	 * @param model way to pass info to page
 	 * @return page that handles request
 	 */
-	@PostMapping("/" + RE)
+	@PostMapping("/" + U.RE)
 	public String recipeCreate(@Valid Recipe r, BindingResult bindingResult, HttpServletRequest request, Model model) {
 		if (bindingResult.hasErrors()) {
-			model.addAttribute(PN, RE);
-			return RE;
+			model.addAttribute(U.PN, U.RE);
+			return U.RE;
 		}
 		Optional<User> ou = getAuthenticatedUser();
 		if (ou.isEmpty()) {
-			return RR + F;
+			return U.RR + U.F;
 		}
 		User u = ou.get();
 		Optional<Recipe> or =( (r.getId() != null) ? recipeService.findById(r.getId()) : Optional.empty());
 		if (or.isPresent()) {
 			Recipe orig = or.get();
 			if (!orig.getUser().equals(u)) {
-				return RR + F;
+				return U.RR + U.F;
 			}
 			orig.setRecipeJSON(r.getRecipeJSON());
 			orig.setTitle(r.getTitle());
@@ -382,11 +367,11 @@ public class GeneralController implements ErrorController {
 		r.setEditTimestamp(new Date()); //unsure if needed
 		r = recipeService.saveRecipe(r);
 		model.addAttribute("rsaved", true);
-		model.addAttribute(PN, RE);
-		model.addAttribute(RE, r);
-		model.addAttribute("recipeJson", r.getRecipeJSON());
+		model.addAttribute(U.PN, U.RE);
+		model.addAttribute(U.RE, r);
+		model.addAttribute(U.RJ, r.getRecipeJSON());
 		model.addAttribute("recipeid", r.getId().toString());
-		return RE;
+		return U.RE;
 	}
 	
 	/**
@@ -394,16 +379,16 @@ public class GeneralController implements ErrorController {
 	 * @param model way to pass info to page
 	 * @return page that handles request
 	 */
-	@GetMapping("/" + RES)
+	@GetMapping("/" + U.RES)
 	public String recipes(Model model) {
 		Optional<User> ou = getAuthenticatedUser();
 		if (ou.isEmpty()) {
-			return RR + LI;
+			return U.RR + U.LI;
 		}
 		User u = ou.get();
 		model.addAttribute("recipeSet", u.getRecipes());
-		model.addAttribute(PN, RES);
-		return RES;
+		model.addAttribute(U.PN, U.RES);
+		return U.RES;
 	}
 	
 	/**
@@ -412,16 +397,16 @@ public class GeneralController implements ErrorController {
 	 * @param model way to pass info to web page
 	 * @return web page that handles request
 	 */
-	@GetMapping("/" + RE + "/tag/{id}")
+	@GetMapping("/" + U.RE + "/tag/{id}")
 	public String addTags(@PathVariable UUID id, Model model) {
 		Optional<Recipe> or = recipeService.findById(id);
 		Optional<User> ou = getAuthenticatedUser();
 		if (or.isEmpty()) {
-			return RR + E;
+			return U.RR + U.E;
 		}
 		Recipe r = or.get();
 		if (ou.isEmpty() || !r.getUser().equals(ou.get())) {
-			return RR + F;
+			return U.RR + U.F;
 		}
 		
 		Set<Tag> ts = r.getTags();
@@ -431,10 +416,10 @@ public class GeneralController implements ErrorController {
 		}
 		
 		model.addAttribute("id", id.toString());
-		model.addAttribute(T, r.getTitle());
+		model.addAttribute(U.T, r.getTitle());
 		model.addAttribute("tags", sj.toString());
-		model.addAttribute(PN, ART);
-		return ART;
+		model.addAttribute(U.PN, U.ART);
+		return U.ART;
 	}
 	
 
@@ -445,19 +430,19 @@ public class GeneralController implements ErrorController {
 	 * @param model way to pass info to web page
 	 * @return page that handles request
 	 */
-	@PostMapping("/" + RE + "/delete/{id}")
+	@PostMapping("/" + U.RE + "/delete/{id}")
 	public String deleteRecipe(@PathVariable UUID id, Model model) {
 		Optional<User> ou = getAuthenticatedUser();
 		Optional<Recipe> or = recipeService.findById(id);
 		if (or.isEmpty()) {
-			return RR + E;
+			return U.RR + U.E;
 		}
 		Recipe r = or.get();
 		if (ou.isEmpty() || !r.getUser().equals(ou.get())) {
-			return RR + F;
+			return U.RR + U.F;
 		}
 		recipeService.removeRecipe(r);
-		return RR + RES + "?delete=true";
+		return U.RR + U.RES + "?delete=true";
 		
 	}
 	/**
@@ -467,16 +452,16 @@ public class GeneralController implements ErrorController {
 	 * @param model way to pass info to web page
 	 * @return page that handles request
 	 */
-	@PostMapping("/" + RE + "/tag/{id}")
+	@PostMapping("/" + U.RE + "/tag/{id}")
 	public String saveTags(@PathVariable UUID id, HttpServletRequest request, Model model) {
 		Optional<Recipe> or = recipeService.findById(id);
 		Optional<User> ou = getAuthenticatedUser();
 		if (or.isEmpty()) {
-			return RR + E;
+			return U.RR + U.E;
 		}
 		Recipe r = or.get();
 		if (ou.isEmpty() || !r.getUser().equals(ou.get())) {
-			return RR + F;
+			return U.RR + U.F;
 		}
 		String tags = request.getParameter("tags");
 		String trimTags = tags.trim().replaceAll(" +", " ");
@@ -495,11 +480,11 @@ public class GeneralController implements ErrorController {
 			sj.add(splitTags[i]);
 		}
 		model.addAttribute("id", id.toString());
-		model.addAttribute(T, r.getTitle());
+		model.addAttribute(U.T, r.getTitle());
 		model.addAttribute("saved",true);
 		model.addAttribute("tags", sj.toString());
-		model.addAttribute(PN, ART);
-		return ART;
+		model.addAttribute(U.PN, U.ART);
+		return U.ART;
 	}
 	
 	/**
@@ -509,11 +494,11 @@ public class GeneralController implements ErrorController {
 	 * @param model way to pass info to web site
 	 * @return web page that handles request
 	 */
-	@GetMapping("/" + RE + "/{id}")
+	@GetMapping("/" + U.RE + "/{id}")
 	public String recipeLookup(@PathVariable UUID id, Recipe r, Model model) {
 		Optional<Recipe> or = recipeService.findById(id);
 		if (or.isEmpty()) {
-			return RR + E;
+			return U.RR + U.E;
 		}
 		r = or.get();
 		Optional<User> ou = getAuthenticatedUser();
@@ -523,7 +508,7 @@ public class GeneralController implements ErrorController {
 			model.addAttribute("editor", editor);
 		}
 		if (r.getState() != Recipe.Visibility.PUBLIC && !editor) {
-			return RR + F;
+			return U.RR + U.F;
 		}
 		SimpleDateFormat sdf = new SimpleDateFormat("MMMMM dd, yyyy");
 		String createDate = sdf.format(r.getCreationTimestamp());
@@ -539,11 +524,11 @@ public class GeneralController implements ErrorController {
 		model.addAttribute("createDate", createDate);
 		model.addAttribute("editDate", editDate);
 		model.addAttribute("tags", sj.toString());
-		model.addAttribute(T, r.getTitle());
+		model.addAttribute(U.T, r.getTitle());
 		model.addAttribute("r", r);
 		model.addAttribute("emoji", r.getEmoji());
-		model.addAttribute("recipeJson", r.getRecipeJSON());
-		model.addAttribute(PN, "viewRecipe");
+		model.addAttribute(U.RJ, r.getRecipeJSON());
+		model.addAttribute(U.PN, "viewRecipe");
     	return "viewRecipe";
 	}
 	
@@ -554,27 +539,27 @@ public class GeneralController implements ErrorController {
 	 * @param model passes info to the page
 	 * @return page that handles request
 	 */
-	@PostMapping("/" + RE + "/{id}")
+	@PostMapping("/" + U.RE + "/{id}")
 	public String knownRecipeEdit(@PathVariable UUID id, Recipe r, Model model) {
 		Optional<User> ou = getAuthenticatedUser();
 		Optional<Recipe> or = recipeService.findById(id);
 		if (or.isEmpty()) {
-			return RR + E;
+			return U.RR + U.E;
 		}
 		r = or.get();
 		if (ou.isEmpty() || !r.getUser().equals(ou.get())) {
 			System.out.println("correctly here");
-			return RR + F;
+			return U.RR + U.F;
 		}
-		model.addAttribute(RE, r);
-		model.addAttribute(T, r.getTitle());
+		model.addAttribute(U.RE, r);
+		model.addAttribute(U.T, r.getTitle());
 		model.addAttribute("emoji", r.getEmoji());
 		model.addAttribute("state", r.getState());
 		model.addAttribute("loadOnly", true);
-		model.addAttribute(PN, RE);
-		model.addAttribute("recipeJson", r.getRecipeJSON());
+		model.addAttribute(U.PN, U.RE);
+		model.addAttribute(U.RJ, r.getRecipeJSON());
 		model.addAttribute("recipeid", r.getId().toString());
-		return RE;
+		return U.RE;
 	}
 	
 	/**
@@ -587,11 +572,11 @@ public class GeneralController implements ErrorController {
 	@GetMapping("/search")
 	public String search(@RequestParam String title, @RequestParam(required=true,defaultValue="0") int page, Model model) {
 		if (page < 0) {
-			return R + S + "?" + T + "=" + title + "&page=0";
+			return U.R + U.S + "?" + U.T + "=" + title + "&page=0";
 		}
 		Page<Recipe> pr = recipeService.searchPublicRecipes(title, page, 28);
 		setUpSearch(pr, title, page, model);
-		return S;
+		return U.S;
 	}
 	
 	/**
@@ -606,8 +591,8 @@ public class GeneralController implements ErrorController {
 		Page<Recipe> pr;
 		StringJoiner sj = new StringJoiner(", ");
 		if (tags.isEmpty()) {
-			model.addAttribute(PN, S);
-			return "tagsearch";
+			model.addAttribute(U.PN, U.S);
+			return U.TS;
 		}
 		List<String> processed = tags.stream().map(s -> s.trim().replaceAll(" +", " ").toUpperCase()).collect(Collectors.toList());
 		List<Tag> validTags = tagService.getValidTags(processed);
@@ -624,9 +609,9 @@ public class GeneralController implements ErrorController {
 			for (String s : processed) {
 				sj.add(s);
 			}
-			model.addAttribute(PN, S);
-			model.addAttribute(T, sj.toString());
-			return "tagsearch";
+			model.addAttribute(U.PN, U.S);
+			model.addAttribute(U.T, sj.toString());
+			return U.TS;
 			
 		}
 
@@ -635,7 +620,7 @@ public class GeneralController implements ErrorController {
 		}
 		setUpSearch(pr, sj.toString(), page, model);
 		model.addAttribute("source", "tags");
-		return S;
+		return U.S;
 	}
 	
 	/**
@@ -643,10 +628,10 @@ public class GeneralController implements ErrorController {
 	 * @param model model to share info with the page
 	 * @return empty tag search page
 	 */
-	@GetMapping("/tagsearch")
+	@GetMapping("/" + U.TS)
 	public String emptyTagSearch(Model model) {
-		model.addAttribute(PN, S);
-		return "tagsearch";
+		model.addAttribute(U.PN, U.S);
+		return U.TS;
 	}
 	
 	//searches for public recipes based on title and page
@@ -657,10 +642,10 @@ public class GeneralController implements ErrorController {
 		if (page > 0) {
 			model.addAttribute("prev", true);
 		}
-		model.addAttribute(T, title);
+		model.addAttribute(U.T, title);
 		model.addAttribute("page", page);
 		model.addAttribute("recipeList", pr.getContent());
-		model.addAttribute(PN, S);
+		model.addAttribute(U.PN, U.S);
 	}
 	
 }

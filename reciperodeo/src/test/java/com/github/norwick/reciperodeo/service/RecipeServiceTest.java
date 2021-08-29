@@ -3,6 +3,7 @@ package com.github.norwick.reciperodeo.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.experimental.categories.Category;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

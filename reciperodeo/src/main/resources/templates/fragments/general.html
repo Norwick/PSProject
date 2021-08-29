@@ -16,7 +16,7 @@
 		<nav>
 			<ul>
 				<li><a th:href="@{/recipes}">Recipes</a></li>
-				<li><a th:href="@{/tagsearch}">Tags</a></li>
+				<li><a th:href="@{/tagSearch}">Tags</a></li>
 				<li><a sec:authorize="isAuthenticated()" th:href="@{/profile}">Profile</a>
 					<a sec:authorize="!isAuthenticated()" th:href="@{/login}">Login</a>
 				</li>

@@ -32,3 +32,22 @@
 	font-size: 1.5rem;
 	cursor: pointer;
 }
+
+#avatar {
+	text-align: center;
+	margin-bottom: 1rem;
+}
+
+
+#avatar-button {
+	width: 15rem;
+	height: 15rem;
+	color: Transparent;
+	font-size: 10rem;
+	background-size: 15rem 15rem;
+}
+
+#avatar-button:hover {
+	color: Black;
+	cursor: pointer;
+}

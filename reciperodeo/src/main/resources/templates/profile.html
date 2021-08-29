@@ -9,6 +9,20 @@
 			<h2>Profile</h2>
 			<div class="msg" th:if="${msg != null}" th:text="${msg}">
 			</div>
+			<div id="avatar">
+				<a href="https://en.gravatar.com/" aria-label="Gravatar Avatar"><button id="avatar-button">✏️</button></a>
+				<style th:inline="css">
+					#avatar-button {
+						background-image: url([[${gravatar}]]);
+					}
+					
+					#avatar-button:hover {
+						background: linear-gradient(rgba(255,255,255,.5), rgba(255,255,255,.5)), url([[${gravatar}]]) no-repeat;
+						background-size: 15rem 15rem;
+					}
+				</style>
+				<!--  <img id="img-avatar" th:src="${gravatar}" alt="Gravatar Avatar"><br> -->
+			</div>
 			<form  th:action="@{/profile}" method="post" >
 					<strong>Username: </strong>
 					<span class="username" th:text="${username}">Yub Jub</span>
