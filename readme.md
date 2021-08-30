@@ -31,7 +31,7 @@ By the way, if you’re trying to run the project, you will need to create a new
 - As an admin, I want to delete tags because they might violate our TOS.
 - As an admin, I want to block certain phrases because they might violate our TOS.
 - As IT, I want to see a log of user activity, so I can get context when an issue is reported.
-- As IT, I want to be able to log in - As a user so I can reproduce bugs.
+- As IT, I want to be able to log in as a user so I can reproduce bugs.
 - As a user, I want to save recipes I like, so they’re easier to find later.
 - As a user, I want to set an image to a recipe so I can help readers picture the end result.
 
