@@ -34,7 +34,7 @@
 			</ul>
 		</div>
 		<div id="page"><a  th:if="${prev != null}" th:href="@{?(title=${title},page=${page - 1})}"><button>←</button></a><a th:if="${next != null}" th:href="@{?(title=${title},page=${page + 1})}"><button>→</button></a></div>
-		<div th:if="${index != null}" id="add-recipe"><a th:href="@{/recipe}">+</a></div>
+		<div th:if="${(source != null) && source == 'index'}" id="add-recipe"><a th:href="@{/recipe}">+</a></div>
 	</div>
 	<footer th:replace="fragments/general.html :: footer"></footer>
 </body>
