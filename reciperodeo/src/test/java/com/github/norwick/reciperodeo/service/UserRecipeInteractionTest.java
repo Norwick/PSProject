@@ -85,10 +85,10 @@ class UserRecipeInteractionTest {
 	@Test
 	@Order(10)
 	void removeUserRecipeTest() {
-		List<User> users = us.findAll();
-		users.forEach(u -> us.removeUser(u));
 		List<Recipe> recipes = rs.findAll();
 		recipes.forEach(r -> rs.removeRecipe(r));
+		List<User> users = us.findAll();
+		users.forEach(u -> us.removeUser(u));
 		Assertions.assertTrue(us.findAll().isEmpty());
 		Assertions.assertTrue(rs.findAll().isEmpty());
 	}

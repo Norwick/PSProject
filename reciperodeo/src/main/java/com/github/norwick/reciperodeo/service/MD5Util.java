@@ -6,7 +6,15 @@ package com.github.norwick.reciperodeo.service;
 
 import java.io.*;
 import java.security.*;
+/**
+ * Quickstart MD5 hashing util provided by Gravatar
+ */
 public class MD5Util {
+ /**
+  * converts md5 hash to string (unused)
+  * @param array array containing md5 hash
+  * @return string representation of hash
+  */
   public static String hex(byte[] array) {
       StringBuffer sb = new StringBuffer();
       for (int i = 0; i < array.length; ++i) {
@@ -15,6 +23,13 @@ public class MD5Util {
       }
       return sb.toString();
   }
+
+
+ /**
+  * converts string to md5 hash
+  * @param message message to convert (in this case emails)
+  * @return md5 hash representation of string
+  */
   public static String md5Hex (String message) {
       try {
       MessageDigest md = 

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.github.norwick.reciperodeo.domain.Recipe;
+import com.github.norwick.reciperodeo.domain.Recipe.Visibility;
 import com.github.norwick.reciperodeo.domain.Tag;
 
 @SpringBootTest
@@ -89,9 +90,56 @@ class TagRecipeInteractionTest {
 	//needs empty database to test, so visual confirmation for now
 	@Test
 	void testTagSearch() {
+		String t1N = "A";
+		String t2N = "B";
+		String t3N = "C";
+		Tag t1 = ts.saveTag(new Tag(t1N));
+		Tag t2 = ts.saveTag(new Tag(t2N));
+		Tag t3 = ts.saveTag(new Tag(t3N));
+		
+		String r1T = "X";
+		String r2T = "Y";
+		String r3T = "Z";
+		Recipe r1 = new Recipe(r1T);
+		r1.setState(Visibility.PUBLIC);
+		r1 = rs.saveRecipe(r1);
+		Recipe r2 = new Recipe(r2T);
+		r2.setState(Visibility.PUBLIC);
+		r2 = rs.saveRecipe(r2);
+		Recipe r3 = new Recipe(r3T);
+		r3.setState(Visibility.PRIVATE);
+		r3 = rs.saveRecipe(r3);
+		
+		t3.addRecipe(r1);
+		t3.addRecipe(r2);
+		t3.addRecipe(r3);
+		t3 = ts.saveTag(t3);
+		
+		t2.addRecipe(r2);
+		t2 = ts.saveTag(t2);
+		
+		t1.addRecipe(r1);
+		t1 = ts.saveTag(t1);
+		
 		List<Tag> t = new ArrayList<>();
-		t.add(ts.findByName("SALTY").get());
-		t.add(ts.findByName("OIL").get());
-		System.out.println(rs.searchByTag(t, 0, 28));
+		t.add(ts.findByName(t1N).get());
+		t.add(ts.findByName(t3N).get());
+		List<Recipe> lr = rs.searchByTag(t, 0, 28).getContent();
+		Assertions.assertEquals(1, lr.size());
+		Assertions.assertEquals(rs.findByTitleContaining(r1T).get(0), lr.get(0));
+		t.remove(0);
+		lr = rs.searchByTag(t, 0, 28).getContent();
+		Assertions.assertEquals(2, lr.size());
+		Assertions.assertTrue(lr.contains(rs.findByTitleContaining(r2T).get(0)));
+		Assertions.assertTrue(lr.contains(rs.findByTitleContaining(r1T).get(0)));
+
+		rs.removeRecipe(rs.findById(r1.getId()).get());
+		rs.removeRecipe(rs.findById(r2.getId()).get());
+		rs.removeRecipe(rs.findById(r3.getId()).get());
+		
+		ts.removeTag(t3);
+		ts.removeTag(t2);
+		ts.removeTag(t1);
+		
 	}
 }

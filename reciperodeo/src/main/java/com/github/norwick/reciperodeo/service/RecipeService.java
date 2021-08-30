@@ -135,6 +135,7 @@ public class RecipeService {
 	 * @return list of recipes that contain all valid tags
 	 */
 	public Page<Recipe> searchByTag(List<Tag> tags, int pageNum, int pageSize) {
+		if (tags.isEmpty()) return Page.empty();
 		Pageable p = PageRequest.of(pageNum, pageSize);
 		List<Recipe> lr = recipeRepository.findByStateAndTagsContainingOrderByCreationTimestampDesc(Recipe.Visibility.PUBLIC, tags.get(0));
 		if (tags.size() > 1) {
