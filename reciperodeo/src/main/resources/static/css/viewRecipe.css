@@ -43,11 +43,12 @@
 
 #instructions ol li {
 	list-style: number;
+	margin-left: 1.5rem;
 }
 
 #instructions ol li li, #ingredients ol li li {
 	list-style: circle;
-	margin-left: 1rem;
+	margin-left: 1.5rem;
 }
 
 #recipe button:hover {

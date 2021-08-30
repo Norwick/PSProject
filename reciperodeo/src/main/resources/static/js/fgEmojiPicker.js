@@ -1,4 +1,6 @@
-/*
+/* This is a script I downloaded from the internet which can be found at
+emoji picker from https://www.cssscript.com/fg-emoji-picker/ 
+the emoji list is also from this source
 
 // Usage
 FgEmojiPicker.init({
